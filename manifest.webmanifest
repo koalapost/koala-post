@@ -1,0 +1,14 @@
+{
+  "name": "無尾熊郵局",
+  "short_name": "無尾熊郵局",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#D9E6FD",
+  "theme_color": "#D9E6FD",
+  "icons": [
+    { "src": "icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
