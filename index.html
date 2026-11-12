@@ -3,85 +3,1849 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>無尾熊郵局｜系統維護中</title>
+<title>無尾熊郵局</title>
 
 <!-- 手機桌面圖示 -->
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
+
+<!-- 從桌面打開時像 App 一樣全螢幕、顯示的名稱 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="無尾熊郵局">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#D9E6FD">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#d9e6fd; --paper:#fffdf7; --ink:#3a3940; --muted:#86858f;
-  --blue:#b5cff8; --peach:#fdd8b4; --line:#ebe5d8; --shadow:#bccbec; --deep:#5b7fc4;
+  --koala:#b4b3b9; --green:#dcfba6; --blue:#b5cff8; --peach:#fdd8b4; --leaf:#90d58c;
+  --line:#ebe5d8; --shadow:#bccbec; --deep:#5b7fc4;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{
   font-family:'Huninn','PingFang TC','Noto Sans TC','Microsoft JhengHei',sans-serif;
-  color:var(--ink); background:var(--bg); min-height:100vh;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 16px;
+  color:var(--ink); background:var(--bg); min-height:100vh; padding-bottom:110px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .12 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+button,input,select,textarea{font:inherit;color:inherit}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.wrap{max-width:920px;margin:0 auto;padding:0 16px}
+
+/* 蠟筆紙張 */
 .paper{position:relative;isolation:isolate}
 .paper::before{content:'';position:absolute;inset:2px;z-index:-1;background:var(--paper);
   border-radius:22px;filter:url(#rough);box-shadow:0 4px 0 var(--shadow)}
-.card{width:100%;max-width:420px;text-align:center;padding:28px 22px 24px}
-.koala{width:160px;height:auto;display:block;margin:0 auto 6px}
-.badge{display:inline-flex;align-items:center;gap:6px;margin:4px auto 0;padding:8px 20px;border-radius:999px;position:relative;isolation:isolate;font-size:18px}
-.badge::before{content:'';position:absolute;inset:0;border-radius:999px;background:var(--peach);z-index:-1;filter:url(#crayonS)}
-h1{margin:14px 0 6px;font-weight:400;font-size:22px}
-.msg{white-space:pre-line;line-height:1.75;margin:8px 0 18px}
-.time{display:inline-block;background:#e9f0fd;color:var(--deep);border-radius:14px;padding:8px 16px;font-size:15px;margin-bottom:6px}
-.btn{border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;border-radius:999px;position:relative;isolation:isolate;font-size:15px;width:100%;font-family:inherit;color:inherit}
-.btn::before{content:'';position:absolute;inset:0;border-radius:999px;background:var(--blue);z-index:-1;filter:url(#crayonS);box-shadow:0 3px 0 rgba(0,0,0,.08)}
-.contact{margin-top:20px;padding-top:14px;border-top:1.5px dashed var(--line)}
+.card{padding:18px 18px 16px;margin:14px 0}
+.card h3{margin:0 0 12px;font-size:17px;display:flex;align-items:center;gap:8px;font-weight:400}
+
+/* 圖示 */
+.ic{width:20px;height:20px;flex:none;display:inline-block;vertical-align:middle}
+.ic.s{width:16px;height:16px}
+
+/* 頁首 */
+.top{padding:22px 0 6px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-logo{width:78px;height:72px;flex:none}
+.brand-logo svg,.brand-logo img{width:100%;height:100%;object-fit:contain;display:block}
+.brand h1{margin:0;font-size:26px;font-weight:400;letter-spacing:2px}
+.brand p{margin:2px 0 0;color:var(--deep);font-size:14px}
+
+/* 分頁 */
+.tabs{display:flex;gap:8px;margin:14px 0 4px}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:none;
+  padding:11px 6px;cursor:pointer;font-size:15px;position:relative;isolation:isolate;color:var(--deep)}
+.tab::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:18px;background:rgba(255,255,255,.45);filter:url(#rough)}
+.tab.on{color:var(--ink)}
+.tab.on::before{background:var(--paper);box-shadow:0 3px 0 var(--shadow)}
+
+/* 首頁 */
+.hero{display:flex;align-items:center;gap:16px;padding:18px 20px;margin:14px 0}
+.hero-koala{width:96px;height:88px;flex:none}
+.hero-koala svg,.hero-koala img{width:100%;height:100%;object-fit:contain}
+.hero h2{margin:0;font-size:20px;font-weight:400}
+.hero h2 b{font-size:34px;font-weight:400;color:var(--deep);margin:0 4px}
+.hero p{margin:6px 0 0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{padding:14px 12px;text-align:center}
+.stat .dot{width:42px;height:42px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;position:relative;isolation:isolate}
+.stat .dot::before{content:'';position:absolute;inset:0;border-radius:50%;background:var(--c);z-index:-1;filter:url(#crayonS)}
+.stat .n{font-size:26px;line-height:1.1}
+.stat .l{font-size:13px;color:var(--muted)}
+.split{display:flex;height:22px;border-radius:12px;overflow:hidden;margin:4px 0 8px;filter:url(#crayonS)}
+.split span{display:block;height:100%}
+.legend{display:flex;gap:16px;font-size:14px;margin-bottom:12px;flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.cols h4{margin:4px 0 8px;font-weight:400;font-size:14px;color:var(--muted)}
+.rank{list-style:none;margin:0;padding:0}
+.rank li{display:grid;grid-template-columns:5.5em 1fr 2em;align-items:center;gap:8px;margin:7px 0;font-size:14px}
+.rk{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track{height:14px;border-radius:8px;background:#f1ede3}
+.bar{display:block;height:100%;border-radius:8px;filter:url(#crayonS)}
+.rv{text-align:right;color:var(--muted)}
+.empty-s{color:var(--muted);font-size:14px;margin:6px 0}
+.row{display:flex;align-items:center;gap:10px;padding:10px 4px;border-top:1.5px dashed var(--line);cursor:pointer}
+.row:first-of-type{border-top:0}
+.row .grow{flex:1;min-width:0}
+.row .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .num{color:var(--deep);font-size:14px;white-space:nowrap}
+
+/* 標籤 */
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:3px 9px;border-radius:999px;position:relative;isolation:isolate;white-space:nowrap}
+.tag::before{content:'';position:absolute;inset:0;border-radius:999px;background:var(--c,#eee);z-index:-1;filter:url(#crayonS)}
+.t-信件{--c:var(--blue)} .t-明信片{--c:var(--peach)}
+.t-筆友{--c:var(--green)} .t-Postcrossing{--c:#d6e3fb} .t-其他{--c:#ece9e2}
+.t-收到{--c:#e9f6dc} .t-寄出{--c:#f3e4f0} .t-待寄出{--c:#fbe7a8}
+.reply-badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#a2482f;background:#fde3d6;border-radius:999px;padding:2px 10px;margin:3px 0 1px;white-space:nowrap}
+.reply-badge .ic{width:13px;height:13px}
+.reply-note{display:flex;align-items:center;gap:6px;background:#fde3d6;color:#a2482f;border-radius:12px;padding:8px 12px;font-size:14px;margin:12px 0 0}
+
+/* 篩選 */
+.filters{padding:14px}
+.search{display:flex;align-items:center;gap:8px;background:#f6f2e9;border-radius:14px;padding:9px 12px;color:var(--muted)}
+.search input{border:0;background:none;outline:none;flex:1;min-width:0;color:var(--ink)}
+.frow{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.frow > b{font-weight:400;font-size:13px;color:var(--muted);width:2.6em}
+.chip{border:0;background:#f3efe6;border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer}
+.chip.on{background:var(--blue);color:var(--ink);box-shadow:0 2px 0 var(--shadow)}
+.count-line{font-size:13px;color:var(--deep);margin:6px 4px 0}
+
+/* 信件卡 */
+.mail-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:12px}
+.mail{display:flex;gap:12px;padding:12px;cursor:pointer}
+.thumb{width:86px;height:86px;flex:none;border-radius:14px;overflow:hidden;display:grid;place-items:center;position:relative;isolation:isolate}
+.thumb::before{content:'';position:absolute;inset:0;background:var(--c,var(--blue));z-index:-1;filter:url(#crayonS)}
+.thumb .ic{width:38px;height:38px;color:#fff}
+.mail .body{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
+.mail .tags{display:flex;gap:5px;flex-wrap:wrap}
+.mail .who{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mail .where,.mail .meta{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mail .date{font-size:12px;color:var(--deep)}
+
+/* 人物卡 */
+.people-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:12px}
+.person{padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer}
+.avatar{width:52px;height:52px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:21px;position:relative;isolation:isolate}
+.avatar::before{content:'';position:absolute;inset:0;border-radius:50%;background:var(--c,var(--koala));z-index:-1;filter:url(#crayonS)}
+.person .name{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.person .info{min-width:0;flex:1}
+.person .sub{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:4px;margin-top:2px}
+.ex{text-align:center;flex:none}
+.ex b{display:block;font-size:24px;font-weight:400;color:var(--deep);line-height:1}
+.ex span{font-size:11px;color:var(--muted)}
+
+/* 按鈕 */
+.btn{border:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:999px;position:relative;isolation:isolate;font-size:15px}
+.btn::before{content:'';position:absolute;inset:0;border-radius:999px;background:var(--c,var(--green));z-index:-1;filter:url(#crayonS);box-shadow:0 3px 0 rgba(0,0,0,.08)}
+.btn.blue{--c:var(--blue)} .btn.ghost{--c:#f1ede4} .btn.danger{--c:#f9cfc9}
+.btn:disabled{opacity:.55;cursor:default}
+.bar-actions{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px}
+.btn{white-space:nowrap}
+.sheet .bar-actions{flex-wrap:wrap}
+.sheet .bar-actions > span{margin-left:auto}
+.sheet .bar-actions .btn{padding:9px 14px;font-size:14px}
+.fab{position:fixed;right:max(16px,calc(50% - 444px));bottom:22px;z-index:20;font-size:16px;padding:14px 22px;--c:var(--green)}
+.fab::before{box-shadow:0 5px 0 var(--shadow)}
+
+/* 空狀態 */
+.empty{text-align:center;padding:30px 10px;color:var(--muted)}
+.empty .koala{width:130px;height:110px;object-fit:contain}
+
+/* 對話框 */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(60,72,110,.35);display:flex;align-items:flex-end;justify-content:center;padding:0}
+.sheet{width:100%;max-width:560px;max-height:92vh;overflow:auto;background:var(--paper);border-radius:26px 26px 0 0;padding:20px 18px 26px;animation:up .22s ease}
+@media(min-width:640px){.modal{align-items:center;padding:20px}.sheet{border-radius:26px}}
+@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sheet-head h3{margin:0;font-weight:400;font-size:20px;display:flex;align-items:center;gap:8px}
+.x{border:0;background:#f1ede4;width:36px;height:36px;border-radius:50%;cursor:pointer;display:grid;place-items:center}
+.field{margin-bottom:14px}
+.field > label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.in{display:block;width:100%;max-width:100%;min-width:0;border:2px solid var(--line);background:#fff;border-radius:14px;padding:10px 12px;outline:none}
+input[type=date].in{-webkit-appearance:none;appearance:none;min-height:46px;text-align:left}
+input[type=date].in::-webkit-date-and-time-value{text-align:left}
+.field,.two > *{min-width:0}
+.in:focus{border-color:var(--blue)}
+textarea.in{min-height:76px;resize:vertical}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg label{cursor:pointer}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:inline-block;padding:8px 16px;border-radius:999px;background:#f3efe6;font-size:14px}
+.seg input:checked + span{background:var(--blue);box-shadow:0 2px 0 var(--shadow)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-top:6px}
+
+/* 詳細 */
+.dl{display:grid;grid-template-columns:5em 1fr;gap:8px 10px;font-size:15px}
+.dl dt{color:var(--muted)} .dl dd{margin:0;word-break:break-word}
+.link{color:var(--deep);cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+.addr-box{background:#f6f2e9;border-radius:12px;padding:8px 10px;line-height:1.6}
+.copy-btn{margin-top:6px;border:0;background:#e9f0fd;color:var(--deep);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+textarea.in.addr{min-height:64px}
+.login{text-align:center;padding:26px 20px 24px;max-width:420px;margin:24px auto}
+.login-koala{width:150px;height:130px;margin:0 auto 6px}
+.login-koala svg,.login-koala img{width:100%;height:100%;object-fit:contain}
+.login h2{margin:4px 0 4px;font-weight:400;font-size:21px}
+.login > p{margin:0 0 14px;font-size:14px}
+.maint-badge{display:inline-flex;align-items:center;gap:6px;margin:6px auto 2px;padding:7px 18px;border-radius:999px;background:var(--peach);font-size:16px;position:relative}
+.maint-msg{white-space:pre-line;line-height:1.7;color:var(--ink);margin:10px 0 16px}
+.maint-note{font-size:13px;color:var(--deep);margin:4px 0 14px}
+.login-msg{color:#b0503f;margin:12px 0 0!important}
+.contact{margin-top:18px;padding-top:14px;border-top:1.5px dashed var(--line);text-align:center}
 .contact p{margin:0;font-size:13px;color:var(--muted)}
-.links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 6px}
+.contact-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 6px}
 .social{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--deep);background:#e9f0fd;border-radius:999px;padding:7px 16px;font-size:14px}
-.ic{width:18px;height:18px;flex:none}
-.foot{margin-top:18px;font-size:13px;color:var(--deep)}
+.social:active{transform:translateY(1px)}
+.contact .handle{font-size:12px}
+.auth-tabs{display:flex;gap:6px;background:#f3efe6;border-radius:999px;padding:4px;margin:10px auto 16px;max-width:260px}
+.auth-tabs button{flex:1;border:0;background:none;border-radius:999px;padding:8px 0;cursor:pointer;color:var(--muted)}
+.auth-tabs button.on{background:#fff;color:var(--ink);box-shadow:0 2px 0 var(--line)}
+.auth-form{text-align:left}
+.btn.wide{width:100%;justify-content:center;margin-top:4px}
+.small{font-size:13px}
+.auth-form .small{margin:-4px 0 12px}
+.hello{margin:0 0 2px!important;color:var(--deep);font-size:15px}
+.me-head{display:flex;align-items:center;gap:14px}
+.me-name{font-size:20px}
+.in.locked{background:#f3efe6;color:var(--muted);border-color:#f3efe6;cursor:default}
+.logout-wrap{text-align:center;margin:18px 0 6px}
+.pending{padding:16px 18px;margin:14px 0}
+.batch{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 4px;padding:6px 4px 8px;border-bottom:1.5px dashed var(--line)}
+.batch .mini{border:0;cursor:pointer;font:inherit;font-size:13px}
+.batch .mini:disabled{opacity:.45;cursor:default}
+.pick-box{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--muted);flex:none}
+.pick-box input{position:absolute;opacity:0;pointer-events:none}
+.pick-box span{width:22px;height:22px;border-radius:7px;border:2px solid #cfc8b8;background:#fff;display:grid;place-items:center;flex:none}
+.pick-box input:checked + span{background:var(--deep);border-color:var(--deep)}
+.pick-box input:checked + span::after{content:'';width:10px;height:6px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:translateY(-1px) rotate(-45deg)}
+.pick-box input:indeterminate + span::after{content:'';width:10px;height:2.5px;background:var(--deep);border-radius:2px}
+.pick-box input:focus-visible + span{outline:2px solid var(--deep);outline-offset:2px}
+.reply-done{display:flex;align-items:center;gap:6px;margin:10px 0 0;font-size:14px;color:var(--deep)}
+.reply-opt{margin-top:10px!important;color:var(--ink)!important;font-size:14px!important}
+.pending .row .grow > div:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reply-opt input{width:18px;height:18px;accent-color:var(--deep)}
+.pending h3{margin:0 0 6px;font-size:17px;font-weight:400;display:flex;align-items:center;gap:8px}
+.pending h3 b{font-weight:400;color:#b07a12}
+.mini{border:0;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;font-size:13px;background:#fbe7a8;color:#6d4c0c;white-space:nowrap}
+.mini:active{transform:translateY(1px)}
+.mail .send-now{align-self:flex-start;margin-top:2px}
+.pstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.pstats div{background:#f6f2e9;border-radius:14px;text-align:center;padding:10px 4px}
+.pstats b{display:block;font-size:24px;font-weight:400;color:var(--deep)}
+.pstats span{font-size:12px;color:var(--muted)}
+
+/* 讀取與提示 */
+.loading{text-align:center;padding:60px 0;color:var(--deep)}
+.loading .koala{width:120px;height:100px;object-fit:contain;animation:bob 1.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:var(--paper);color:var(--ink);border:2px solid var(--line);box-shadow:0 4px 0 var(--shadow);padding:10px 18px;border-radius:18px;font-size:14px;line-height:1.5;text-align:center;width:max-content;max-width:calc(100% - 40px);opacity:0;transition:.25s;z-index:80;pointer-events:none}
+.toast.err{background:#fde3d6;border-color:#f6c3ad;color:#8a3b30}
+/* 確認對話框（取代瀏覽器內建的 confirm） */
+.dialog{position:fixed;inset:0;z-index:70;background:rgba(60,72,110,.35);display:flex;align-items:center;justify-content:center;padding:20px}
+.dialog-box{width:100%;max-width:340px;padding:20px 20px 18px;text-align:center;animation:pop .18s ease}
+.dialog-box .dlg-koala img{width:76px;height:auto;display:block;margin:0 auto 4px}
+.dialog-box h3{margin:6px 0 0;font-weight:400;font-size:18px}
+.dialog-box p{margin:8px 0 0;line-height:1.6;white-space:pre-line}
+.dialog-box .dlg-actions{display:flex;gap:10px;justify-content:center;margin-top:18px}
+.dialog-box .dlg-actions .btn{min-width:96px;justify-content:center}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.demo-note{font-size:12px;text-align:center;color:var(--deep);margin:4px 0 0}
+
+
+/* 使用說明視窗 */
+.help-btn{margin-left:auto;align-self:flex-start;margin-top:6px;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.7);color:var(--deep);border-radius:999px;padding:7px 12px;font-size:14px;flex:none}
+.help-link{margin-top:10px;border:0;background:none;cursor:pointer;color:var(--deep);font-size:14px;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:4px}
+.help-tabs{display:flex;gap:6px;background:#f3efe6;border-radius:999px;padding:4px;margin:0 0 14px}
+.help-tabs button{flex:1;border:0;background:none;border-radius:999px;padding:8px 0;cursor:pointer;color:var(--muted);font-size:15px}
+.help-tabs button.on{background:#fff;color:var(--ink);box-shadow:0 2px 0 var(--line)}
+.help .feats{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.help .feat{background:#f6f2e9;border-radius:20px;padding:10px 10px 14px}
+.help .mock{background:var(--bg);border-radius:16px;padding:6px}
+.help .mock svg{display:block;width:100%;height:auto}
+.help h4{margin:10px 6px 4px;font-size:17px;font-weight:400;display:flex;align-items:center;gap:8px}
+.help h4 i{font-style:normal;font-size:12px;color:var(--deep);background:#e9f0fd;border-radius:999px;padding:1px 10px}
+.help h4 i.new{color:#a2482f;background:#fde3d6}
+.help .feat p{margin:0 6px;font-size:15px;line-height:1.7}
+.help .lead{margin:0 0 12px;color:var(--muted);font-size:14px}
+.help .pick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.help .pick button{border:2px solid var(--line);background:#fff;border-radius:16px;padding:10px 6px;cursor:pointer;font-size:16px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 3px 0 var(--line)}
+.help .pick button small{font-size:12px}
+.help .pick button.on{background:var(--deep);border-color:var(--deep);color:#fff;box-shadow:0 3px 0 #46679f}
+.help .note{display:flex;gap:10px;align-items:flex-start;background:#fff6da;border-radius:14px;padding:10px 12px;font-size:14px;margin-bottom:12px}
+.help .note svg{width:22px;height:22px;flex:none;margin-top:2px}
+.help .note b{font-weight:400;color:#b07a12}
+.help ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.help .step{background:#f6f2e9;border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.help .step .hd{display:flex;align-items:center;gap:10px}
+.help .step h3{margin:0;font-size:17px;font-weight:400}
+.help .step .num{width:32px;height:32px;border-radius:50%;background:var(--deep);color:#fff;font-size:16px;display:grid;place-items:center;flex:none;box-shadow:0 2px 0 #46679f}
+.help .step.done .num{background:#a9d86e;box-shadow:0 2px 0 #86b54d}
+.help .step p{margin:0;font-size:15px;line-height:1.7}
+.help .step .sub{font-size:13px;color:var(--muted)}
+.help .key{display:inline-block;background:#e9f0fd;color:#46679f;border-radius:8px;padding:0 6px;margin:0 1px;white-space:nowrap}
+.help .pic{display:flex;justify-content:center}
+.help .pic svg{width:min(200px,64%);height:auto;display:block}
+.help .tips{margin-top:14px;background:#f6f2e9;border-radius:16px;padding:12px 14px;font-size:14px}
+.help .tips p{display:flex;gap:8px;margin:6px 0 0}
+.help .tips svg{width:20px;height:20px;flex:none}
+.help .ring{transform-box:fill-box;transform-origin:center;animation:hpulse 1.6s ease-in-out infinite}
+@keyframes hpulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.06);opacity:.45}}
+@media (prefers-reduced-motion: reduce){.help .ring{animation:none}}
+.help svg text{font-family:'Huninn','PingFang TC','Noto Sans TC',sans-serif}
+
+@media(max-width:620px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .cols{grid-template-columns:1fr}
+  .brand h1{font-size:22px}
+  .brand-logo{width:66px;height:60px}
+}
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <filter id="crayonS" x="-10%" y="-10%" width="120%" height="120%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="2" result="w"/>
-    <feDisplacementMap in="SourceGraphic" in2="w" scale="1.6" xChannelSelector="R" yChannelSelector="G" result="d"/>
-    <feTurbulence type="fractalNoise" baseFrequency="1.3" numOctaves="1" seed="5" result="g"/>
-    <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -0.7 0 0 0 1.3" result="ga"/>
-    <feComposite in="d" in2="ga" operator="in"/>
-  </filter>
-  <filter id="rough" x="-10%" y="-20%" width="120%" height="140%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="7" result="w"/>
-    <feDisplacementMap in="SourceGraphic" in2="w" scale="4" xChannelSelector="R" yChannelSelector="G"/>
-  </filter>
-</defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- 蠟筆筆觸：邊緣抖動＋顆粒 -->
+    <filter id="crayon" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="4" result="w"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="9" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -0.9 0 0 0 1.3" result="ga"/>
+      <feComposite in="d" in2="ga" operator="in"/>
+    </filter>
+    <filter id="crayonS" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="2" result="w"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="1.6" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency="1.3" numOctaves="1" seed="5" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -0.7 0 0 0 1.3" result="ga"/>
+      <feComposite in="d" in2="ga" operator="in"/>
+    </filter>
+    <filter id="rough" x="-10%" y="-20%" width="120%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="7" result="w"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
 
-<main class="paper card">
-  <img class="koala" src="data:image/png;base64,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" alt="無尾熊郵局">
-  <div class="badge"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></g></svg>系統維護中</div>
-  <h1>無尾熊郵局正在整理信箱</h1>
-  <!-- ↓ 要改維護時間或說明，改這兩行就好 -->
-  <div class="time">11/12（四）08:00 開始</div>
-  <p class="msg">系統正在升級維護，
-維護結束時會再通知大家。
-造成不便，請多包涵。</p>
-  <button class="btn" type="button" onclick="location.reload()"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></g></svg>重新整理看看</button>
-  <div class="contact">
-    <p>有問題請聯絡無尾熊郵局管理員</p>
-    <div class="links">
-      <a class="social" href="https://www.instagram.com/koala.stamp/" target="_blank" rel="noopener">Instagram</a>
-      <a class="social" href="https://www.threads.com/@koala.stamp" target="_blank" rel="noopener">Threads</a>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="brand-logo" id="brandLogo"></div>
+      <div>
+        <h1>無尾熊郵局</h1>
+        <p>收到的每一封信，都收在這裡</p>
+      </div>
+      <button class="help-btn" data-act="help" aria-label="使用說明"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.6"/><path d="M12 17v.1"/></g></svg><span>說明</span></button>
     </div>
-    <p>@koala.stamp</p>
+    <p id="demoNote" class="demo-note hidden">目前是預覽模式（範例資料），在程式裡填入 Supabase 金鑰後就會讀寫資料庫</p>
+  </header>
+
+  <nav class="tabs" id="tabs"></nav>
+  <main id="main"></main>
+</div>
+
+<div id="bootErr" style="display:none;margin:16px;padding:14px 16px;border-radius:16px;background:#fff3f0;color:#8a3b30;font-size:14px;line-height:1.6;word-break:break-all"></div>
+<script>
+/* 啟動檢查：程式沒跑起來時，把原因直接顯示在畫面上 */
+(function(){
+  function show(msg){
+    var box = document.getElementById('bootErr');
+    if(!box) return;
+    box.style.display = 'block';
+    box.innerHTML += '<div style="white-space:pre-wrap">' + String(msg).replace(/[<>&]/g, function(c){ return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c]; }) + '</div>';
+  }
+  function around(lineno){
+    try{
+      if(!window.__GUARD_LINE) return '';
+      var scripts = document.getElementsByTagName('script');
+      var lines = scripts[scripts.length - 1].textContent.split('\n');
+      var first = window.__GUARD_LINE + 14;
+      var out = [];
+      for(var n = lineno - 1; n <= lineno + 1; n++){
+        var i = n - first;
+        if(i >= 0 && i < lines.length) out.push((n === lineno ? '→ ' : '　 ') + lines[i].trim().slice(0, 110));
+      }
+      return out.join('\n');
+    }catch(err){ return ''; }
+  }
+  window.addEventListener('error', function(e){
+    show('程式錯誤：' + (e.message || '未知') + (e.lineno ? '（第 ' + e.lineno + ' 行）' : ''));
+    if(e.lineno){ var a = around(e.lineno); if(a) show(a); }
+  });
+  try{ throw new Error('probe'); }catch(e){ var m = String(e.stack || '').match(/:(\d+):\d+\)?\s*$/m) || String(e.stack || '').match(/:(\d+):\d+/); window.__GUARD_LINE = m ? +m[1] : 0; }
+  setTimeout(function(){
+    if(!window.__APP_STARTED){
+      show('網頁程式沒有啟動。請確認 index.html 有上傳完整（最後一行是 </html>），再重新整理一次。');
+    }
+  }, 4000);
+})();
+</script>
+<button class="btn fab" data-act="newMail" id="fab"></button>
+<div id="modal" class="modal hidden"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="dialog" class="dialog hidden"></div>
+
+<datalist id="countries"></datalist>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+/* ================= 常數 ================= */
+const TW_CITIES = ['基隆市','臺北市','新北市','桃園市','新竹市','新竹縣','苗栗縣','臺中市','彰化縣','南投縣','雲林縣','嘉義市','嘉義縣','臺南市','高雄市','屏東縣','宜蘭縣','花蓮縣','臺東縣','澎湖縣','金門縣','連江縣'];
+const COUNTRIES = ['日本','韓國','中國','香港','澳門','新加坡','馬來西亞','泰國','越南','菲律賓','印尼','印度','美國','加拿大','墨西哥','巴西','阿根廷','英國','愛爾蘭','法國','德國','荷蘭','比利時','盧森堡','瑞士','奧地利','義大利','西班牙','葡萄牙','希臘','波蘭','捷克','斯洛伐克','匈牙利','斯洛維尼亞','克羅埃西亞','羅馬尼亞','保加利亞','瑞典','挪威','丹麥','芬蘭','冰島','愛沙尼亞','拉脫維亞','立陶宛','白俄羅斯','烏克蘭','俄羅斯','土耳其','以色列','澳洲','紐西蘭','南非','埃及'];
+const CHANNELS = ['筆友','Postcrossing','其他'];
+const AVATAR_COLORS = ['#dcfba6','#b5cff8','#fdd8b4','#e8d9f7','#cdeee6','#fbe7a8'];
+
+const ICONS = {
+  home:'<path d="M4 11.5 12 4.5l8 7"/><path d="M6.5 10v9.5h11V10"/><path d="M10 19.5v-5h4v5"/>',
+  letter:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3.5 7.5 12 14l8.5-6.5"/>',
+  postcard:'<rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M12.5 8.5v8"/><path d="M5.5 9.5h4M5.5 12.5h4M5.5 15.5h3"/><rect x="15" y="8" width="3.5" height="3.5"/>',
+  people:'<circle cx="9" cy="8.5" r="3.2"/><path d="M3 19.5c0-3.6 2.7-5.6 6-5.6s6 2 6 5.6"/><circle cx="17" cy="9.5" r="2.4"/><path d="M16.5 14c2.7.1 4.5 1.8 4.5 4.6"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  search:'<circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/>',
+  edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+  trash:'<path d="M5 7h14M10 7V4.5h4V7M7 7l1 12.5h8L17 7"/>',
+  close:'<path d="M6 6l12 12M18 6 6 18"/>',
+  globe:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c3 3 3 14 0 17M12 3.5c-3 3-3 14 0 17"/>',
+  pin:'<path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.2"/>',
+  inbox:'<path d="M12 4v10M8 10.5l4 4 4-4"/><path d="M4 15v4.5h16V15"/>',
+  send:'<path d="M12 15V4.5M8 8.5l4-4 4 4"/><path d="M4 15v4.5h16V15"/>',
+  pen:'<path d="M15 4.5l4.5 4.5L9.5 19H5v-4.5z"/><path d="m13 6.5 4.5 4.5"/>',
+  hash:'<path d="M9 4 7.5 20M16.5 4 15 20M4.5 9h15M4 15h15"/>',
+  heart:'<path d="M12 19.5s-7.5-4.6-7.5-10A4 4 0 0 1 12 7a4 4 0 0 1 7.5 2.5c0 5.4-7.5 10-7.5 10z"/>',
+  chevron:'<path d="m9 6 6 6-6 6"/>',
+  clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  check:'<path d="m5 12.5 4.5 4.5L19 7"/>',
+  user:'<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c0-4.2 3.4-6.6 7.5-6.6s7.5 2.4 7.5 6.6"/>',
+  lock:'<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>',
+  logout:'<path d="M14 4.5H6.5v15H14"/><path d="M11 12h9.5M17 8.5l3.5 3.5-3.5 3.5"/>',
+  chat:'<path d="M5 5.5h14a1.5 1.5 0 0 1 1.5 1.5v8.5A1.5 1.5 0 0 1 19 17h-8l-4.5 3.5V17H5a1.5 1.5 0 0 1-1.5-1.5V7A1.5 1.5 0 0 1 5 5.5z"/><path d="M8 10h8M8 13h5"/>',
+  help:'<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.6"/><path d="M12 17v.1"/>',
+  copy:'<rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/>'
+};
+
+/* ================= 工具 ================= */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const byDateDesc = (a,b) => (b.date||'').localeCompare(a.date||'') || (b.created||'').localeCompare(a.created||'');
+function ic(name, cls=''){ return `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#crayonS)">${ICONS[name]||''}</g></svg>`; }
+
+// 你畫的無尾熊（已去背），拆成多行避免單行太長
+const LOGO_DATA = 'data:image/png;base64,' + [
+  'iVBORw0KGgoAAAANSUhEUgAAAWgAAAEjCAMAAAAopGtIAAADAFBMVEWxsbYAAAABAQH9/Pze/q650/79/v/h/rGR246trbG5u8L+',
+  '3bnDyNHN2Ozr/s69wcsVFRbM1un547fP1/DDytfL1eeqqqqr55iGh4l3dnqVlpfo6OnJ1+fW5/tHR0lpaWzDytjEy9k1NTYmJifK',
+  '1OXL1ebT1dpWVli+vr74+f1/f3/19/1/f/+ys7m9ws3N6dSqqv/K1OS4vMSc4JLEy9ru9P3x9f309/3t8/6x///m5/7Ey9udnaHV',
+  '5PcAAP9////U8sYA///Y/v/Ky87H4ebKzO61yJrN6KdeXmF9fYGpuJS/v//P09e9w8662Pa+w8/EzNqapIu77qAfHyC42NjI0N7l',
+  '7P+5vcbHzuHD2aPG0N/H0N7/AAC8ws++8KHG0d28vNu6xNi4zO7I0N7m7v2AgX+grI+80p3GzuA+P0GZzMzGz+DGz+DH0N7U4vXd',
+  '/LX/f39/f79/gH5/v7+Zmf+ZpbKR2v+5v8q5v8i/yd+/xNHAv8TGz+DW4vXg3+Hq7/z//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA0gZQvAAABAHRSTlP+AP7+',
+  '/v4C/v/++f/5L/70/0/+EtFvA//+/v7++RL+/rGR//6QrPz/BNACsALX0P8Dz9b/cE9vjy8DD1P/KwEC/gEHCP8P/v7///4EDq8J',
+  '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'
+].join('');
+function koalaSVG(){
+  return '<img class="koala" src="' + LOGO_DATA + '" alt="">';
+}
+let LOGO_URL = LOGO_DATA;
+const logoMarkup = () => LOGO_URL ? `<img src="${LOGO_URL}" alt="無尾熊郵局">` : koalaSVG();
+
+function copyText(t){
+  const done = () => toast('已複製地址');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(done).catch(() => fallbackCopy(t, done));
+  } else fallbackCopy(t, done);
+}
+function fallbackCopy(t, done){
+  const ta = document.createElement('textarea');
+  ta.value = t; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
+  let ok = false; try{ ok = document.execCommand('copy'); }catch(e){}
+  ta.remove(); ok ? done() : toast('無法自動複製，請長按地址手動複製');
+}
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg;
+  t.classList.toggle('err', /失敗|錯誤|不正確|不一樣|請填寫|無法/.test(msg));
+  t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'), t.classList.contains('err') ? 3200 : 2200);
+}
+// 和畫面同風格的確認視窗，回傳 true（確定）或 false（取消）
+function askConfirm(text, opt){
+  opt = opt || {};
+  return new Promise(resolve => {
+    const d = $('#dialog');
+    d.innerHTML = `<div class="paper dialog-box" role="alertdialog" aria-modal="true">
+      <div class="dlg-koala">${logoMarkup()}</div>
+      ${opt.title ? `<h3>${esc(opt.title)}</h3>` : ''}
+      <p>${esc(text)}</p>
+      <div class="dlg-actions">
+        <button class="btn ghost" data-dlg="0">${esc(opt.cancel || '取消')}</button>
+        <button class="btn ${opt.danger ? 'danger' : 'blue'}" data-dlg="1">${opt.danger ? ic('trash','s') : ''}${esc(opt.ok || '確定')}</button>
+      </div></div>`;
+    d.classList.remove('hidden');
+    const onKey = e => { if(e.key === 'Escape'){ e.stopImmediatePropagation(); done(false); } };
+    const done = v => { d.classList.add('hidden'); d.innerHTML = ''; d.onclick = null; document.removeEventListener('keydown', onKey, true); resolve(v); };
+    document.addEventListener('keydown', onKey, true);
+    d.onclick = e => { const b = e.target.closest('[data-dlg]'); if(b) done(b.dataset.dlg === '1'); else if(e.target === d) done(false); };
+    const okBtn = d.querySelector('[data-dlg="1"]'); if(okBtn) okBtn.focus();
+  });
+}
+
+const SUPABASE_URL = 'https://vcabdxsnlqgevssidpft.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_yXlrXLQw1gvHoe9oYJFaTw_kp5JO0Ti';
+const ACCOUNT_DOMAIN = 'koala-post.app';
+
+const IS_LIVE = !!SUPABASE_KEY;
+const sb = (IS_LIVE && window.supabase)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{persistSession:true, autoRefreshToken:true, storageKey:'koalaPostAuth'}})
+  : null;
+
+const B64 = {
+  enc(s){
+    s = String(s == null ? '' : s);
+    if(!s) return '';
+    const b = new TextEncoder().encode(s);
+    let bin = '';
+    for(let i = 0; i < b.length; i += 0x8000) bin += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000));
+    return 'b1:' + btoa(bin);
+  },
+  dec(s){
+    s = String(s == null ? '' : s);
+    if(!s.startsWith('b1:')) return s;
+    try{
+      const bin = atob(s.slice(3));
+      const b = new Uint8Array(bin.length);
+      for(let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i);
+      return new TextDecoder().decode(b);
+    }catch(e){ return s; }
+  }
+};
+
+const ACCOUNT_RE = /^[A-Za-z0-9]{2,40}$/;
+const toEmail = a => String(a || '').trim().toLowerCase() + '@' + ACCOUNT_DOMAIN;
+const fail = msg => { throw new Error('MSG:' + msg); };
+function checkAccount(a){ if(!ACCOUNT_RE.test(a)) fail('帳號只能用英文字母和數字，2～40 個字'); }
+function checkPassword(pw){
+  if(pw.length < 6) fail('密碼至少要 6 個字');
+  if(pw.length > 72) fail('密碼最多 72 個字');
+}
+function checkNickname(n){
+  if(!n) fail('請填寫暱稱（筆名）');
+  if(n.length > 30) fail('暱稱最多 30 個字');
+}
+
+// 把 Supabase 的英文錯誤轉成給使用者看的中文
+function sbErr(error){
+  const m = String((error && (error.message || error.error_description)) || error || '');
+  const code = (error && error.code) || '';
+  const status = error && error.status;
+  if(/Invalid login credentials/i.test(m)) return new Error('MSG:帳號或密碼不正確');
+  if(/different from the old/i.test(m)) return new Error('MSG:新密碼不能和目前的密碼一樣');
+  if(/rate limit|too many/i.test(m) || status === 429) return new Error('MSG:嘗試太多次了，請過幾分鐘再試');
+  if(/already registered|already exists/i.test(m)) return new Error('MSG:這個帳號已經有人使用了，請換一個');
+  if(/Database error saving new user/i.test(m)) return new Error('MSG:註冊失敗，請確認邀請碼和帳號是否正確');
+  if(/Failed to fetch|NetworkError|Load failed/i.test(m)) return new Error('MSG:連不上伺服器，請確認網路後再試');
+  if(code === 'PGRST301' || /JWT|not authenticated/i.test(m) || status === 401) return new Error('AUTH');
+  return new Error('MSG:' + (m || '發生錯誤，請再試一次'));
+}
+const must = ({data, error}) => { if(error) throw sbErr(error); return data; };
+
+async function currentUser(){
+  const {data} = await sb.auth.getSession();
+  const u = data && data.session && data.session.user;
+  if(!u) throw new Error('AUTH');
+  return u;
+}
+
+const toProfile = r => ({id:r.id, account:r.account, nickname:r.nickname, address:B64.dec(r.address), addressEn:B64.dec(r.address_en),
+  defaultKind:r.default_kind || '明信片', defaultChannel:r.default_channel || 'Postcrossing', created:r.created_at || ''});
+const toPerson = r => ({id:r.id, name:r.name, channel:r.channel, region:r.region, place:r.place, address:B64.dec(r.address), note:B64.dec(r.note), created:r.created_at || ''});
+const toMail = r => ({id:r.id, date:r.date || '', kind:r.kind, direction:r.direction, personId:r.person_id || '', channel:r.channel, region:r.region, place:r.place, pcId:r.pc_id || '', note:B64.dec(r.note), created:r.created_at || '', replyOf:r.reply_of || ''});
+const str = (v, max) => String(v == null ? '' : v).trim().slice(0, max || 2000);
+
+// 一次最多讀 1000 筆，資料多的時候分批讀完
+async function fetchAll(table, uid){
+  const out = [], size = 1000;
+  for(let from = 0; ; from += size){
+    const rows = must(await sb.from(table).select('*').eq('owner', uid).order('created_at').order('id').range(from, from + size - 1));
+    out.push(...rows);
+    if(rows.length < size) break;
+  }
+  return out;
+}
+async function loadAll(){
+  const u = await currentUser();
+  const [prof, people, mails] = await Promise.all([
+    sb.from('profiles').select('*').eq('id', u.id).maybeSingle().then(must),
+    fetchAll('people', u.id),
+    fetchAll('mails', u.id)
+  ]);
+  if(!prof) fail('找不到帳號資料，請聯絡管理員');
+  return {profile:toProfile(prof), people:people.map(toPerson), mails:mails.map(toMail)};
+}
+async function loadData(){ const d = await loadAll(); return {people:d.people, mails:d.mails}; }
+
+const Live = {
+  // 維護模式：on = 維護中、message = 說明文字、bypass = 目前登入的是維護管理員
+  async maintenance(){ return must(await sb.rpc('maintenance_status')) || {on:false}; },
+
+  async getConfig(){ return {inviteRequired: !!must(await sb.rpc('invite_required'))}; },
+
+  async register(f){
+    const account = str(f.account, 40), nickname = str(f.nickname, 30), password = String(f.password || ''), invite = str(f.invite, 100);
+    checkAccount(account); checkNickname(nickname); checkPassword(password);
+    const chk = must(await sb.rpc('signup_check', {p_account:account, p_invite:invite}));
+    if(chk === 'invite') fail('邀請碼不正確');
+    if(chk === 'taken') fail('這個帳號已經有人使用了，請換一個');
+    const data = must(await sb.auth.signUp({email:toEmail(account), password, options:{data:{account, nickname, invite}}}));
+    if(!data.session) fail('帳號已建立，但還不能登入：請管理員到 Supabase 關閉「Confirm email」');
+    const d = await loadAll();
+    return {token:'ok', profile:d.profile};
+  },
+
+  async login(account, password){
+    account = str(account, 40);
+    if(!ACCOUNT_RE.test(account)) fail('帳號或密碼不正確');
+    const data = must(await sb.auth.signInWithPassword({email:toEmail(account), password:String(password || '')}));
+    const meta = (data.user && data.user.user_metadata) || {};
+    const d = await loadAll();
+    return {token:'ok', profile:d.profile, mustChange: !!meta.must_change};
+  },
+
+  getData: loadAll,
+
+  async saveProfile(p){
+    const u = await currentUser();
+    const nickname = str(p.nickname, 30);
+    checkNickname(nickname);
+    const row = must(await sb.from('profiles')
+      .update({nickname, address:B64.enc(str(p.address)), address_en:B64.enc(str(p.addressEn))})
+      .eq('id', u.id).select().single());
+    return toProfile(row);
+  },
+
+  // 新增信件時預設勾選的類型和管道
+  async savePrefs(p){
+    const u = await currentUser();
+    const kind = p.defaultKind, channel = p.defaultChannel;
+    if(['信件','明信片'].indexOf(kind) < 0 || CHANNELS.indexOf(channel) < 0) fail('預設值不正確');
+    const row = must(await sb.from('profiles').update({default_kind:kind, default_channel:channel}).eq('id', u.id).select().single());
+    return toProfile(row);
+  },
+
+  async changePassword(oldPw, newPw){
+    const u = await currentUser();
+    newPw = String(newPw || '');
+    checkPassword(newPw);
+    // 先用目前的密碼驗證一次，確定是本人
+    const {error} = await sb.auth.signInWithPassword({email:u.email, password:String(oldPw || '')});
+    if(error) fail(/Invalid login credentials/i.test(error.message) ? '目前的密碼不正確' : sbErr(error).message.replace(/^MSG:/, ''));
+    must(await sb.auth.updateUser({password:newPw, data:{must_change:false}}));
+    try{ await sb.auth.signOut({scope:'others'}); }catch(e){}   // 其他手機或電腦要重新登入
+    return {token:'ok'};
+  },
+
+  async savePerson(p){
+    const u = await currentUser();
+    const row = {name:str(p.name, 100), channel:str(p.channel, 30), region:str(p.region, 10), place:str(p.place, 60),
+                 address:B64.enc(str(p.address)), note:B64.enc(str(p.note))};
+    if(!row.name) fail('請填寫名字');
+    let id = p.id;
+    if(id){
+      const r = must(await sb.from('people').update(row).eq('id', id).select('id'));
+      if(!r.length) fail('找不到這位人物');
+    }else{
+      id = must(await sb.from('people').insert({...row, owner:u.id}).select('id').single()).id;
+    }
+    return {id, data: await loadData()};
+  },
+
+  async deletePerson(id){
+    await currentUser();
+    must(await sb.from('people').delete().eq('id', id));
+    return {id, data: await loadData()};
+  },
+
+  // reply = true：收到的信勾了「要回信」，儲存時順便新增一筆給同一個人的待寄出
+  async saveMail(m, reply){
+    const u = await currentUser();
+    if(['收到','寄出','待寄出'].indexOf(m.direction) < 0) fail('方向不正確');
+    const row = {date:m.date || today(), kind:str(m.kind, 10) || '信件', direction:m.direction, person_id:m.personId || null,
+                 channel:str(m.channel, 30), region:str(m.region, 10), place:str(m.place, 60), pc_id:str(m.pcId, 40), note:B64.enc(str(m.note))};
+    let id = m.id;
+    if(id){
+      const r = must(await sb.from('mails').update(row).eq('id', id).select('id'));
+      if(!r.length) fail('找不到這筆信件');
+    }else{
+      id = must(await sb.from('mails').insert({...row, owner:u.id}).select('id').single()).id;
+    }
+
+    // 不重複建立：這封信已經建立過回信，或同一個人已經有待寄出，就不再新增
+    let replyCreated = false;
+    let data = await loadData();
+    if(reply && m.direction === '收到'){
+      const exists = data.mails.some(x => x.replyOf === id || (m.personId && x.personId === m.personId && x.direction === '待寄出'));
+      if(!exists){
+        must(await sb.from('mails').insert({
+          owner:u.id, date:today(), kind:row.kind, direction:'待寄出', person_id:row.person_id,
+          channel:row.channel, region:row.region, place:row.place, pc_id:'', note:B64.enc('回信'), reply_of:id
+        }));
+        replyCreated = true;
+        data = await loadData();
+      }
+    }
+    return {id, data, replyCreated};
+  },
+
+  // 一次把好幾筆待寄出標記為「寄出」，日期改成今天
+  async markSent(ids){
+    await currentUser();
+    ids = [].concat(ids || []).map(String).filter(Boolean);
+    if(!ids.length) return {count:0, data: await loadData()};
+    const r = must(await sb.from('mails').update({direction:'寄出', date:today()}).in('id', ids).eq('direction', '待寄出').select('id'));
+    return {count:r.length, data: await loadData()};
+  },
+
+  async deleteMail(id){
+    await currentUser();
+    must(await sb.from('mails').delete().eq('id', id));
+    return {id, data: await loadData()};
+  }
+};
+
+const Demo = (() => {
+  const db = {
+    people:[
+      {id:'p1',name:'小米',channel:'筆友',region:'台灣',place:'臺中市',note:'喜歡貓咪郵票',created:'2026-01-02'},
+      {id:'p2',name:'Anna',channel:'筆友',region:'海外',place:'德國',address:'Musterstraße 12\n20095 Hamburg\nGermany',note:'住在漢堡',created:'2026-02-11'},
+      {id:'p3',name:'Yuki',channel:'筆友',region:'海外',place:'日本',note:'',created:'2026-03-05'},
+      {id:'p4',name:'Mika_fi',channel:'Postcrossing',region:'海外',place:'芬蘭',note:'',created:'2026-05-20'}
+    ],
+    mails:[
+      {id:'m1',date:'2026-10-28',kind:'信件',direction:'收到',personId:'p1',channel:'筆友',region:'台灣',place:'臺中市',pcId:'',note:'附了一張手繪書籤',created:''},
+      {id:'m2',date:'2026-10-12',kind:'明信片',direction:'收到',personId:'p4',channel:'Postcrossing',region:'海外',place:'芬蘭',pcId:'FI-2345678',note:'嚕嚕米明信片',created:''},
+      {id:'m3',date:'2026-09-30',kind:'信件',direction:'收到',personId:'p2',channel:'筆友',region:'海外',place:'德國',pcId:'',note:'',created:''},
+      {id:'m4',date:'2026-09-15',kind:'信件',direction:'寄出',personId:'p2',channel:'筆友',region:'海外',place:'德國',pcId:'',note:'',created:''},
+      {id:'m5',date:'2026-08-20',kind:'明信片',direction:'收到',personId:'p3',channel:'筆友',region:'海外',place:'日本',pcId:'',note:'',created:''},
+      {id:'m6',date:'2026-08-02',kind:'明信片',direction:'收到',personId:'',channel:'Postcrossing',region:'海外',place:'美國',pcId:'US-9876543',note:'',created:''},
+      {id:'m7',date:'2026-07-11',kind:'信件',direction:'收到',personId:'p1',channel:'筆友',region:'台灣',place:'臺中市',pcId:'',note:'',created:''},
+      {id:'m9',date:'2026-11-01',kind:'信件',direction:'待寄出',personId:'p3',channel:'筆友',region:'海外',place:'日本',pcId:'',note:'回 Yuki 的明信片',created:''},
+      {id:'m8',date:'2026-06-18',kind:'明信片',direction:'收到',personId:'',channel:'其他',region:'台灣',place:'花蓮縣',pcId:'',note:'朋友旅行寄來',created:''}
+    ]
+  };
+  const clone = () => JSON.parse(JSON.stringify(db));
+  const up = (key,o) => { if(!o.id){ o.id=key[0]+Date.now(); o.created=new Date().toISOString(); db[key].push(o);} else { const i=db[key].findIndex(x=>x.id===o.id); db[key][i]={...db[key][i],...o}; } return o.id; };
+  let me = {id:'u1', account:'koala', nickname:'無尾熊', defaultKind:'明信片', defaultChannel:'Postcrossing', address:'樹葉鎮樹頂動物園\n尤加利巷 5 號\n無尾熊郵局', addressEn:'Koala Post\nNo. 5, Eucalyptus Lane\nTreetop Zoo, Leafy Town 12345', created:'2026-11-09'};
+  let pw = 'koala123';
+  const ok = () => ({token:'demo', profile:{...me}});
+  return {
+    getConfig: () => ({inviteRequired:false}),
+    // 預覽時在網址後面加 ?maintenance 可以看維護畫面
+    maintenance: () => ({on: /[?&]maintenance\b/.test(location.search), message:'', bypass:false}),
+    login: (a, p) => (String(a).trim().toLowerCase() === me.account.toLowerCase() && p === pw) ? ok() : fail('帳號或密碼不正確（預覽：koala / koala123）'),
+    register: f => { checkAccount(String(f.account).trim()); checkNickname(String(f.nickname||'').trim()); checkPassword(String(f.password)); me = {...me, nickname:f.nickname, account:String(f.account).trim(), address:''}; pw = f.password; return ok(); },
+    getData: () => ({...clone(), profile:{...me}}),
+    saveProfile: p => { me = {...me, nickname:p.nickname, address:p.address, addressEn:p.addressEn}; return {...me}; },
+    savePrefs: p => { me = {...me, defaultKind:p.defaultKind, defaultChannel:p.defaultChannel}; return {...me}; },
+    changePassword: (o,n) => { if(o !== pw) fail('目前的密碼不正確'); checkPassword(String(n)); pw = n; return {token:'demo'}; },
+    savePerson: p => ({id:up('people',{...p}), data:clone()}),
+    deletePerson: id => { db.people=db.people.filter(x=>x.id!==id); db.mails.forEach(m => { if(m.personId===id) m.personId=''; }); return {id,data:clone()}; },
+    saveMail: (m,reply) => {
+      const id = up('mails',{...m});
+      let replyCreated = false;
+      if(reply && m.direction==='收到' && !db.mails.some(x => x.replyOf===id || (m.personId && x.personId===m.personId && x.direction==='待寄出'))){
+        up('mails',{date:today(), kind:m.kind, direction:'待寄出', personId:m.personId, channel:m.channel, region:m.region, place:m.place, pcId:'', note:'回信', replyOf:id});
+        replyCreated = true;
+      }
+      return {id, data:clone(), replyCreated};
+    },
+    markSent: ids => { let n=0; db.mails.forEach(x => { if(ids.includes(x.id) && x.direction==='待寄出'){ x.direction='寄出'; x.date=today(); n++; } }); return {count:n, data:clone()}; },
+    deleteMail: id => { db.mails=db.mails.filter(x=>x.id!==id); return {id,data:clone()}; }
+  };
+})();
+
+// 登入狀態：Supabase 會自動記在這台手機上，之後打開不用再登入
+let TOKEN = '';
+function saveToken(t){ TOKEN = t || ''; }
+// 管理員的社群帳號（登入頁下方的聯絡連結，會用瀏覽器另開）
+const SOCIAL = {
+  instagram: 'https://www.instagram.com/koala.stamp/',
+  threads: 'https://www.threads.com/@koala.stamp'
+};
+// 「MSG:」開頭的錯誤訊息直接給使用者看
+const errText = err => { const m = String((err && err.message) || err || ''); const i = m.indexOf('MSG:'); return i >= 0 ? m.slice(i + 4) : m; };
+const isAuthErr = err => /\bAUTH\b/.test(String((err && err.message) || err || ''));
+
+function call(fn, ...args){
+  const run = async () => {
+    if(!IS_LIVE){ await new Promise(r => setTimeout(r, 150)); return Demo[fn](...args); }
+    if(!sb) fail('網頁元件沒有載入成功，請重新整理一次');
+    return Live[fn](...args);
+  };
+  return run().catch(err => {
+    if(isAuthErr(err)){ saveToken(''); showAuth('login', '登入已過期，請重新登入'); throw new Error('NEED_LOGIN'); }
+    throw new Error(errText(err));
+  });
+}
+
+/* ---------- 維護畫面（資料庫 app_settings 的 maintenance 設成 on 時顯示） ---------- */
+let MAINT = {on:false};
+const DEFAULT_MAINT_MSG = '系統正在升級維護，完成後會再通知大家。\n造成不便，請多包涵。';
+const maintBlocked = () => !!(MAINT && MAINT.on && !MAINT.bypass);
+// 問資料庫現在是不是維護中；讀不到就當作沒有維護，網站照常運作
+async function checkMaintenance(){
+  try{ MAINT = (await call('maintenance')) || {on:false}; }catch(e){ MAINT = {on:false}; }
+  return maintBlocked();
+}
+function showMaintenance(msg){
+  closeModal();
+  $('#tabs').classList.add('hidden'); $('#fab').classList.add('hidden');
+  $('#main').innerHTML = `<section class="paper card login">
+    <div class="login-koala">${logoMarkup()}</div>
+    <div class="maint-badge">${ic('clock','s')}系統維護中</div>
+    <h2>無尾熊郵局正在整理信箱</h2>
+    <p class="maint-msg">${esc((MAINT && MAINT.message) || DEFAULT_MAINT_MSG)}</p>
+    ${msg ? `<p class="login-msg">${esc(msg)}</p>` : ''}
+    <button class="btn blue wide" data-act="maintReload">${ic('check','s')}重新整理看看</button>
+    <div class="contact">
+      <p>有問題請聯絡無尾熊郵局管理員</p>
+      <div class="contact-links">
+        <a class="social" href="${SOCIAL.instagram}" target="_blank" rel="noopener">${ic('chat','s')}Instagram</a>
+        <a class="social" href="${SOCIAL.threads}" target="_blank" rel="noopener">${ic('chat','s')}Threads</a>
+      </div>
+      <p class="handle">@koala.stamp</p>
+      <button class="help-link" data-act="maintAdmin">管理員登入</button>
+    </div>
+  </section>`;
+}
+
+/* ---------- 登入／註冊畫面 ---------- */
+let CONFIG = null;
+async function showAuth(mode, msg){
+  closeModal();
+  $('#tabs').classList.add('hidden'); $('#fab').classList.add('hidden');
+  if(!CONFIG){ try{ CONFIG = await call('getConfig'); }catch(e){ CONFIG = {inviteRequired:false}; } }
+  const adminOnly = maintBlocked();          // 維護中：只開放管理員登入，不能註冊
+  if(adminOnly) mode = 'login';
+  const isReg = mode === 'register';
+  $('#main').innerHTML = `<section class="paper card login">
+    <div class="login-koala">${logoMarkup()}</div>
+    <h2>${adminOnly ? '管理員登入' : '歡迎來到無尾熊郵局'}</h2>
+    ${adminOnly ? `<p class="maint-note">系統維護中，只有管理員可以登入</p>` : `<div class="auth-tabs">
+      <button class="${isReg?'':'on'}" data-act="authMode" data-m="login">登入</button>
+      <button class="${isReg?'on':''}" data-act="authMode" data-m="register">註冊</button>
+    </div>`}
+    <form id="authForm" class="auth-form">
+      ${isReg ? `<div class="field"><label>暱稱（筆名）</label><input class="in" name="nickname" maxlength="30" required placeholder="寫信時署名的名字"></div>` : ''}
+      <div class="field"><label>帳號${isReg ? '（英文字母或數字，登入用，不能和別人重複）' : ''}</label><input class="in" name="account" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required minlength="2" maxlength="40" pattern="[A-Za-z0-9]{2,40}" title="只能用英文字母和數字，2～40 個字"></div>
+      <div class="field"><label>密碼${isReg ? '（至少 6 個字）' : ''}</label><input class="in" type="password" name="password" autocomplete="${isReg?'new-password':'current-password'}" required minlength="${isReg?6:1}"></div>
+      ${isReg ? `<div class="field"><label>再輸入一次密碼</label><input class="in" type="password" name="password2" autocomplete="new-password" required></div>` : ''}
+      ${isReg && CONFIG.inviteRequired ? `<div class="field"><label>邀請碼</label><input class="in" name="invite" required></div>` : ''}
+      ${isReg ? `<p class="muted small">收件地址可以註冊後在「我的」頁面填寫</p>` : ''}
+      <button class="btn blue wide" type="submit">${ic('check','s')}${isReg ? '註冊並進入' : '登入'}</button>
+      ${msg ? `<p class="login-msg">${esc(msg)}</p>` : ''}
+    </form>
+    <div class="contact">
+      <p>忘記密碼的話，請聯絡無尾熊郵局管理員</p>
+      <div class="contact-links">
+        <a class="social" href="${SOCIAL.instagram}" target="_blank" rel="noopener">${ic('chat','s')}Instagram</a>
+        <a class="social" href="${SOCIAL.threads}" target="_blank" rel="noopener">${ic('chat','s')}Threads</a>
+      </div>
+      <p class="handle">@koala.stamp</p>
+      ${adminOnly ? `<button class="help-link" data-act="maintBack">回到維護公告</button>` : `<button class="help-link" data-act="help">第一次使用？看使用說明</button>`}
+    </div>
+  </section>`;
+  const f = $('#authForm');
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = f.querySelector('[type=submit]');
+    if(isReg && f.password.value !== f.password2.value) return showAuthMsg('兩次輸入的密碼不一樣');
+    btn.disabled = true;
+    try{
+      const r = isReg
+        ? await call('register', {nickname:f.nickname.value.trim(), account:f.account.value.trim(), password:f.password.value, invite:f.invite ? f.invite.value.trim() : ''})
+        : await call('login', f.account.value.trim(), f.password.value);
+      // 維護中：登入後再確認一次是不是維護管理員
+      if(MAINT && MAINT.on && await checkMaintenance()){
+        saveToken(''); PROFILE = null;
+        if(sb) await sb.auth.signOut({scope:'local'}).catch(() => {});
+        showMaintenance('這個帳號不是維護管理員，請等維護結束後再登入');
+        return;
+      }
+      saveToken(r.token); PROFILE = r.profile; view = r.mustChange ? 'me' : 'home';
+      startApp();
+      if(MAINT && MAINT.on) setTimeout(() => toast('目前是維護模式，只有管理員看得到網站'), 900);
+      if(r.mustChange) setTimeout(() => toast('你用的是臨時密碼，請在下方修改成新密碼'), 600);
+      if(isReg) toast('註冊成功，歡迎！');
+    }catch(err){ btn.disabled = false; showAuthMsg(err.message); }
+  });
+}
+function showAuthMsg(msg){
+  const f = $('#authForm'); if(!f) return;
+  let p = f.querySelector('.login-msg');
+  if(!p){ p = document.createElement('p'); p.className = 'login-msg'; f.appendChild(p); }
+  p.textContent = msg;
+}
+
+async function startApp(){
+  $('#tabs').classList.remove('hidden'); $('#fab').classList.remove('hidden');
+  renderTabs();
+  $('#main').innerHTML = `<div class="loading">${koalaSVG()}<p>正在打開郵局…</p></div>`;
+  try{
+    const r = await call('getData');
+    PROFILE = r.profile || PROFILE;
+    DB = {people:r.people, mails:r.mails};
+    render();
+  }catch(err){ if(err.message !== 'NEED_LOGIN'){ toast('讀取失敗：' + err.message); render(); } }
+}
+
+async function logout(){
+  if(!await askConfirm('確定要登出嗎？', {ok:'登出'})) return;
+  saveToken(''); PROFILE = null; DB = {people:[], mails:[]}; view = 'home';
+  if(sb) sb.auth.signOut({scope:'local'}).catch(() => {});
+  showAuth('login', '已登出');
+}
+
+/* ================= 狀態 ================= */
+let DB = {people:[], mails:[]};
+let PROFILE = null;
+let view = 'home';
+const filt = {q:'', kind:'全部', dir:'全部', channel:'全部', region:'全部'};
+const pf = {q:'', channel:'全部', reply:'全部'};
+
+const person = id => DB.people.find(p => p.id === id);
+const personName = m => { if(!m.personId) return m.channel==='Postcrossing' ? (m.pcId || 'Postcrossing 卡友') : '未指定'; const p=person(m.personId); return p ? p.name : '（已刪除的人）'; };
+const placeText = o => o.region==='台灣' ? '台灣 · '+(o.place||'未填城市') : (o.place || '海外');
+const placeIcon = o => o.region==='台灣' ? ic('pin','s') : ic('globe','s');
+function stat(pid){
+  const ms = DB.mails.filter(m => m.personId === pid);
+  const recv = ms.filter(m => m.direction === '收到').length;
+  const sent = ms.filter(m => m.direction === '寄出').length;
+  const pending = ms.filter(m => m.direction === '待寄出').length;
+  const done = ms.filter(m => m.direction !== '待寄出');
+  // 最後一封（依日期，同一天看建立時間）是「收到」的話，就是待回覆
+  const latest = [...done].sort(byDateDesc)[0];
+  const needReply = !!latest && latest.direction === '收到';
+  return {recv, sent, pending, total: recv + sent, last: done.map(m=>m.date).sort().pop() || '', needReply, lastDate: latest ? latest.date : ''};
+}
+function replyBadge(s){
+  return `<span class="reply-badge">${ic('clock','s')}待回覆${s.pending ? '・已排待寄出' : ''}</span>`;
+}
+function avatarColor(id){ let h=0; for(const c of String(id)) h=(h*31+c.charCodeAt(0))>>>0; return AVATAR_COLORS[h % AVATAR_COLORS.length]; }
+
+/* ================= 版面 ================= */
+function renderTabs(){
+  const tabs = [['home','home','總覽'],['mails','letter','信件'],['people','people','人物'],['me','user','我的']];
+  $('#tabs').innerHTML = tabs.map(([v,i,l]) => `<button class="tab ${view===v?'on':''}" data-act="tab" data-v="${v}">${ic(i)}${l}</button>`).join('');
+  $('#fab').classList.toggle('hidden', view==='me' || !TOKEN && IS_LIVE);
+  $('#fab').innerHTML = view==='people' ? ic('plus')+'新增人物' : ic('plus')+'新增信件';
+  $('#fab').dataset.act = view==='people' ? 'newPerson' : 'newMail';
+}
+function render(){
+  renderTabs();
+  const m = $('#main');
+  if(view==='home') m.innerHTML = homeHTML();
+  if(view==='mails'){ m.innerHTML = mailsHTML(); renderMailList(); }
+  if(view==='people'){ m.innerHTML = peopleHTML(); renderPeopleList(); }
+  if(view==='me'){ m.innerHTML = meHTML(); bindMe(); }
+}
+
+/* ---------- 總覽 ---------- */
+function rank(list, key, color, limit=8){
+  const c = {};
+  list.forEach(x => { const k = key(x) || '未填'; c[k] = (c[k]||0) + 1; });
+  const arr = Object.entries(c).sort((a,b) => b[1]-a[1]).slice(0, limit);
+  if(!arr.length) return `<p class="empty-s">還沒有紀錄</p>`;
+  const max = arr[0][1];
+  return `<ul class="rank">${arr.map(([k,v]) => `<li><span class="rk">${esc(k)}</span><span class="track"><span class="bar" style="width:${Math.max(8, v/max*100)}%;background:${color}"></span></span><span class="rv">${v}</span></li>`).join('')}</ul>`;
+}
+function pendingRow(m){
+  return `<div class="row" data-act="openMail" data-id="${m.id}">
+    <label class="pick-box" aria-label="勾選"><input type="checkbox" class="pchk" value="${m.id}"><span></span></label>
+    <span class="tag t-${esc(m.kind)}">${esc(m.kind)}</span>
+    <div class="grow"><div>${esc(personName(m))}</div><div class="sub">${esc(m.note || placeText(m))}</div></div>
+    <button class="mini" data-act="markSent" data-id="${m.id}">${ic('check','s')}已寄出</button></div>`;
+}
+function homeHTML(){
+  if(!DB.mails.length && !DB.people.length) return `<section class="paper card empty">${koalaSVG()}${PROFILE && PROFILE.nickname ? `<p>${esc(PROFILE.nickname)}，歡迎來到無尾熊郵局</p>` : ''}<p>信箱還是空的</p><p>按右下角「新增信件」放進第一封吧</p></section>`;
+  const R = DB.mails.filter(m => m.direction === '收到');
+  const sent = DB.mails.filter(m => m.direction === '寄出').length;
+  const P = DB.mails.filter(m => m.direction === '待寄出').sort((a,b) => (a.date||'').localeCompare(b.date||''));
+  const letters = R.filter(m => m.kind==='信件').length;
+  const cards = R.length - letters;
+  const tw = R.filter(m => m.region==='台灣'), os = R.filter(m => m.region==='海外');
+  const twPct = R.length ? tw.length / R.length * 100 : 50;
+  const statBox = (l,n,i,c) => `<div class="paper stat"><div class="dot" style="--c:${c}">${ic(i)}</div><div class="n">${n}</div><div class="l">${l}</div></div>`;
+  const topPeople = DB.people.map(p => ({p, s:stat(p.id)})).filter(x => x.s.total).sort((a,b) => b.s.total-a.s.total).slice(0,5);
+  const recent = [...R].sort(byDateDesc).slice(0,5);
+  return `
+  <section class="paper hero">
+    <div class="hero-koala">${logoMarkup()}</div>
+    <div>${PROFILE && PROFILE.nickname ? `<p class="hello">${esc(PROFILE.nickname)}，你好</p>` : ''}<h2>已經收到<b>${R.length}</b>封</h2><p class="muted">信件 ${letters}　明信片 ${cards}　寄出 ${sent}${P.length ? '　待寄出 ' + P.length : ''}</p></div>
+  </section>
+  ${P.length ? `<section class="paper pending">
+    <h3>${ic('clock')}待寄出<b>${P.length}</b>封</h3>
+    <div class="batch">
+      <label class="pick-box all"><input type="checkbox" id="pchkAll"><span></span>全選</label>
+      <button class="mini" id="batchSent" data-act="batchSent" disabled>${ic('check','s')}勾選的已寄出</button>
+    </div>
+    ${P.map(pendingRow).join('')}
+  </section>` : ''}
+  <div class="stats">
+    ${statBox('信件',letters,'letter','var(--blue)')}
+    ${statBox('明信片',cards,'postcard','var(--peach)')}
+    ${statBox('通信的人',DB.people.length,'people','var(--green)')}
+    ${statBox('寄出',sent,'send','#e3dcf3')}
   </div>
-</main>
+  <section class="paper card">
+    <h3>${ic('pin')}信從哪裡來</h3>
+    <div class="split"><span style="width:${twPct}%;background:var(--leaf)"></span><span style="width:${100-twPct}%;background:var(--blue)"></span></div>
+    <div class="legend"><span><i style="background:var(--leaf)"></i>台灣 ${tw.length}</span><span><i style="background:var(--blue)"></i>海外 ${os.length}</span></div>
+    <div class="cols">
+      <div><h4>台灣城市</h4>${rank(tw, m => m.place, 'var(--leaf)')}</div>
+      <div><h4>海外國家</h4>${rank(os, m => m.place, 'var(--blue)')}</div>
+    </div>
+  </section>
+  <section class="paper card">
+    <h3>${ic('pen')}收信管道</h3>
+    ${rank(R, m => m.channel, 'var(--peach)')}
+  </section>
+  <section class="paper card">
+    <h3>${ic('heart')}最常通信的人</h3>
+    ${topPeople.length ? topPeople.map(({p,s}) => `<div class="row" data-act="openPerson" data-id="${p.id}">
+      <div class="avatar" style="--c:${avatarColor(p.id)};width:38px;height:38px;font-size:16px">${esc((p.name||'?').slice(0,1))}</div>
+      <div class="grow"><div>${esc(p.name)}</div><div class="sub">${esc(p.channel)} · ${esc(placeText(p))}</div></div>
+      <span class="num">交換 ${s.total} 次</span></div>`).join('') : '<p class="empty-s">還沒有紀錄</p>'}
+  </section>
+  <section class="paper card">
+    <h3>${ic('inbox')}最近收到</h3>
+    ${recent.length ? recent.map(m => `<div class="row" data-act="openMail" data-id="${m.id}">
+      <span class="tag t-${esc(m.kind)}">${esc(m.kind)}</span>
+      <div class="grow"><div>${esc(personName(m))}</div><div class="sub">${esc(placeText(m))}</div></div>
+      <span class="num">${esc(m.date)}</span></div>`).join('') : '<p class="empty-s">還沒有紀錄</p>'}
+  </section>`;
+}
+
+/* ---------- 信件 ---------- */
+function chipRow(label, k, opts, state){
+  return `<div class="frow"><b>${label}</b>${opts.map(o => `<button class="chip ${state[k]===o?'on':''}" data-act="chip" data-s="${state===filt?'m':'p'}" data-k="${k}" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>`;
+}
+function mailsHTML(){
+  return `<div class="paper card filters">
+    <label class="search">${ic('search')}<input id="mq" placeholder="搜尋名字、地點、編號、備註" value="${esc(filt.q)}"></label>
+    ${chipRow('類型','kind',['全部','信件','明信片'],filt)}
+    ${chipRow('方向','dir',['全部','收到','寄出','待寄出'],filt)}
+    ${chipRow('管道','channel',['全部',...CHANNELS],filt)}
+    ${chipRow('地區','region',['全部','台灣','海外'],filt)}
+  </div>
+  <div id="mailCount" class="count-line"></div>
+  <div id="mailList" class="mail-list"></div>`;
+}
+function filteredMails(){
+  const q = filt.q.trim().toLowerCase();
+  return DB.mails.filter(m =>
+    (filt.kind==='全部' || m.kind===filt.kind) &&
+    (filt.dir==='全部' || m.direction===filt.dir) &&
+    (filt.channel==='全部' || m.channel===filt.channel) &&
+    (filt.region==='全部' || m.region===filt.region) &&
+    (!q || [personName(m), m.place, m.pcId, m.note, m.date].join(' ').toLowerCase().includes(q))
+  ).sort(byDateDesc);
+}
+function mailCard(m){
+  const color = m.kind==='信件' ? 'var(--blue)' : 'var(--peach)';
+  return `<article class="paper mail" data-act="openMail" data-id="${m.id}">
+    <div class="thumb" style="--c:${color}">${ic(m.kind==='信件'?'letter':'postcard')}</div>
+    <div class="body">
+      <div class="tags"><span class="tag t-${esc(m.kind)}">${esc(m.kind)}</span><span class="tag t-${esc(m.direction)}">${esc(m.direction)}</span><span class="tag t-${esc(m.channel)}">${esc(m.channel)}</span></div>
+      <div class="who">${esc(personName(m))}</div>
+      <div class="where">${placeIcon(m)}${esc(placeText(m))}</div>
+      ${m.pcId ? `<div class="meta">${ic('hash','s')}${esc(m.pcId)}</div>` : ''}
+      <div class="date">${esc(m.date)}</div>
+      ${m.direction==='待寄出' ? `<button class="mini send-now" data-act="markSent" data-id="${m.id}">${ic('check','s')}已寄出</button>` : ''}
+    </div>
+  </article>`;
+}
+function renderMailList(){
+  const list = filteredMails();
+  $('#mailCount').textContent = `共 ${list.length} 筆`;
+  $('#mailList').innerHTML = list.length ? list.map(mailCard).join('') : `<div class="paper card empty" style="grid-column:1/-1">${koalaSVG()}<p>沒有符合的信件</p></div>`;
+}
+
+/* ---------- 人物 ---------- */
+function peopleHTML(){
+  return `<div class="paper card filters">
+    <label class="search">${ic('search')}<input id="pq" placeholder="搜尋名字、地點、地址、備註" value="${esc(pf.q)}"></label>
+    ${chipRow('管道','channel',['全部',...CHANNELS],pf)}
+    ${chipRow('狀態','reply',['全部','待回覆'],pf)}
+  </div>
+  <div id="peopleCount" class="count-line"></div>
+  <div id="peopleList" class="people-list"></div>`;
+}
+function renderPeopleList(){
+  const q = pf.q.trim().toLowerCase();
+  const list = DB.people
+    .filter(p => (pf.channel==='全部' || p.channel===pf.channel) && (!q || [p.name,p.place,p.address,p.note].join(' ').toLowerCase().includes(q)))
+    .map(p => ({p, s:stat(p.id)}))
+    .filter(x => pf.reply==='全部' || x.s.needReply)
+    .sort((a,b) => pf.reply==='待回覆'
+      ? (a.s.lastDate||'').localeCompare(b.s.lastDate||'')          // 待回覆：等最久的排前面
+      : b.s.total-a.s.total || (b.s.last||'').localeCompare(a.s.last||''));
+  $('#peopleCount').textContent = `共 ${list.length} 人`;
+  $('#peopleList').innerHTML = list.length ? list.map(({p,s}) => `
+    <article class="paper person" data-act="openPerson" data-id="${p.id}">
+      <div class="avatar" style="--c:${avatarColor(p.id)}">${esc((p.name||'?').slice(0,1))}</div>
+      <div class="info">
+        <div class="name">${esc(p.name)}</div>
+        ${s.needReply ? replyBadge(s) : ''}
+        <div class="sub">${placeIcon(p)}${esc(placeText(p))}</div>
+        <div class="sub"><span class="tag t-${esc(p.channel)}">${esc(p.channel)}</span>收 ${s.recv}・寄 ${s.sent}${s.pending ? '・待寄 ' + s.pending : ''}</div>
+      </div>
+      <div class="ex"><b>${s.total}</b><span>交換次數</span></div>
+    </article>`).join('') : `<div class="paper card empty" style="grid-column:1/-1">${koalaSVG()}<p>還沒有人物</p></div>`;
+}
+
+/* ---------- 我的 ---------- */
+function meHTML(){
+  const p = PROFILE || {};
+  return `<section class="paper card">
+    <div class="me-head">
+      <div class="avatar" style="--c:${avatarColor(p.id||'me')};width:60px;height:60px;font-size:24px">${esc((p.nickname||'?').slice(0,1))}</div>
+      <div><div class="me-name">${esc(p.nickname||'')}</div><div class="muted small">帳號：${esc(p.account||'')}</div></div>
+    </div>
+  </section>
+  <section class="paper card">
+    <h3>${ic('user')}我的資料</h3>
+    <form id="profileForm">
+      <div class="field"><label>暱稱（筆名）</label><input class="in" name="nickname" maxlength="30" required value="${esc(p.nickname)}"></div>
+      <div class="field"><label>帳號（註冊後不能修改）</label><input class="in locked" value="${esc(p.account)}" readonly tabindex="-1"></div>
+      <div class="field"><label>中文地址</label><textarea class="in addr" name="address" placeholder="讓筆友寄信給你的地址，可多行">${esc(p.address)}</textarea>
+        ${p.address ? `<button type="button" class="copy-btn" data-act="copyMyAddr">${ic('copy','s')}複製中文地址</button>` : ''}</div>
+      <div class="field"><label>英文地址（選填，給海外筆友）</label><textarea class="in addr" name="addressEn" autocapitalize="words" spellcheck="false" placeholder="Koala Post&#10;No. 5, Eucalyptus Lane&#10;Treetop Zoo, Leafy Town 12345">${esc(p.addressEn)}</textarea>
+        ${p.addressEn ? `<button type="button" class="copy-btn" data-act="copyMyAddrEn">${ic('copy','s')}複製英文地址</button>` : ''}</div>
+      <div class="bar-actions"><span></span><button class="btn blue" type="submit">${ic('check','s')}儲存資料</button></div>
+    </form>
+  </section>
+  <section class="paper card">
+    <h3>${ic('letter')}新增信件的預設</h3>
+    <p class="muted small" style="margin:-4px 0 12px">按「新增信件」時，會先幫你選好這兩項</p>
+    <form id="prefForm">
+      <div class="field"><label>類型</label>${seg('defKind',['信件','明信片'],p.defaultKind || '明信片')}</div>
+      <div class="field" style="margin-bottom:0"><label>管道</label>${seg('defChannel',CHANNELS,p.defaultChannel || 'Postcrossing')}</div>
+    </form>
+  </section>
+  <section class="paper card">
+    <h3>${ic('lock')}修改密碼</h3>
+    <form id="pwForm">
+      <div class="field"><label>目前的密碼</label><input class="in" type="password" name="old" autocomplete="current-password" required></div>
+      <div class="field"><label>新密碼（至少 6 個字）</label><input class="in" type="password" name="pw1" autocomplete="new-password" required minlength="6"></div>
+      <div class="field"><label>再輸入一次新密碼</label><input class="in" type="password" name="pw2" autocomplete="new-password" required></div>
+      <p class="muted small">改密碼後，其他手機或電腦需要重新登入</p>
+      <div class="bar-actions"><span></span><button class="btn" style="--c:#fbe7a8" type="submit">${ic('lock','s')}修改密碼</button></div>
+    </form>
+  </section>
+  <div class="logout-wrap"><button class="btn ghost" data-act="logout">${ic('logout','s')}登出</button></div>`;
+}
+function bindMe(){
+  const f = $('#profileForm');
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = f.querySelector('[type=submit]'); btn.disabled = true;
+    try{
+      PROFILE = await call('saveProfile', {nickname:f.nickname.value.trim(), address:f.address.value.trim(), addressEn:f.addressEn.value.trim()});
+      render(); toast('資料已儲存');
+    }catch(err){ btn.disabled = false; if(err.message !== 'NEED_LOGIN') toast(err.message); }
+  });
+  // 預設值：點一下就儲存
+  const pr = $('#prefForm');
+  pr.addEventListener('change', async () => {
+    const want = {defaultKind: pr.defKind.value, defaultChannel: pr.defChannel.value};
+    try{
+      PROFILE = await call('savePrefs', want);
+      toast('已設為預設：' + want.defaultKind + '・' + want.defaultChannel);
+    }catch(err){
+      if(err.message !== 'NEED_LOGIN') toast('儲存失敗：' + err.message);
+      const p = PROFILE || {};
+      pr.querySelectorAll('[name=defKind]').forEach(r => r.checked = r.value === (p.defaultKind || '明信片'));
+      pr.querySelectorAll('[name=defChannel]').forEach(r => r.checked = r.value === (p.defaultChannel || 'Postcrossing'));
+    }
+  });
+  const g = $('#pwForm');
+  g.addEventListener('submit', async e => {
+    e.preventDefault();
+    if(g.pw1.value !== g.pw2.value) return toast('兩次輸入的新密碼不一樣');
+    const btn = g.querySelector('[type=submit]'); btn.disabled = true;
+    try{
+      const r = await call('changePassword', g.old.value, g.pw1.value);
+      saveToken(r.token); g.reset(); toast('密碼已修改');
+    }catch(err){ if(err.message !== 'NEED_LOGIN') toast(err.message); }
+    btn.disabled = false;
+  });
+}
+
+/* ================= 對話框 ================= */
+function openModal(html){ const m=$('#modal'); m.innerHTML=`<div class="sheet">${html}</div>`; m.classList.remove('hidden'); document.body.style.overflow='hidden'; }
+function closeModal(){ $('#modal').classList.add('hidden'); $('#modal').innerHTML=''; document.body.style.overflow=''; }
+const head = (icon, title) => `<div class="sheet-head"><h3>${ic(icon)}${title}</h3><button class="x" data-act="close" aria-label="關閉">${ic('close')}</button></div>`;
+const seg = (name, opts, val) => `<div class="seg">${opts.map(o => `<label><input type="radio" name="${name}" value="${esc(o)}" ${o===val?'checked':''}><span>${esc(o)}</span></label>`).join('')}</div>`;
+const citySelect = val => `<select class="in" name="city">${TW_CITIES.map(c => `<option ${c===val?'selected':''}>${c}</option>`).join('')}</select>`;
+function placeFields(o){
+  return `<div class="field"><label>地區</label>${seg('region',['台灣','海外'],o.region)}</div>
+  <div class="field place-tw ${o.region==='台灣'?'':'hidden'}"><label>城市</label>${citySelect(o.region==='台灣'?o.place:'臺北市')}</div>
+  <div class="field place-os ${o.region==='海外'?'':'hidden'}"><label>國家</label><input class="in" name="country" list="countries" placeholder="例如：德國" value="${esc(o.region==='海外'?o.place:'')}"></div>`;
+}
+function syncPlace(form){
+  const r = form.region.value;
+  form.querySelector('.place-tw').classList.toggle('hidden', r!=='台灣');
+  form.querySelector('.place-os').classList.toggle('hidden', r!=='海外');
+}
+const readPlace = f => f.region.value==='台灣' ? f.city.value : f.country.value.trim();
+
+/* ---------- 信件表單 ---------- */
+function mailForm(m = {}){
+  const isNew = !m.id;
+  const P = PROFILE || {};
+  const defKind = P.defaultKind || '明信片', defChannel = P.defaultChannel || 'Postcrossing';
+  m = {date:today(), kind:defKind, direction:'收到', channel:defChannel, region: defChannel==='Postcrossing' ? '海外' : '台灣', place:'', pcId:'', note:'', personId:'', ...m};
+  // 編輯時，如果這封信已經建立過回信，就不再顯示「要回信」
+  const replied = !isNew && DB.mails.some(x => x.replyOf === m.id);
+  const opts = [...DB.people].sort((a,b) => a.name.localeCompare(b.name,'zh-Hant'))
+    .map(p => `<option value="${p.id}" ${p.id===m.personId?'selected':''}>${esc(p.name)}（${esc(p.place||p.region)}）</option>`).join('');
+  openModal(`${head(isNew?'plus':'edit', isNew?'新增信件':'編輯信件')}
+  <form id="mailForm" data-id="${esc(m.id||'')}">
+    <div class="field"><label>類型</label>${seg('kind',['信件','明信片'],m.kind)}</div>
+    <div>
+      <div class="field"><label>方向</label>${seg('direction',['收到','寄出','待寄出'],m.direction)}
+        ${replied
+          ? `<p class="reply-done ${m.direction==='收到'?'':'hidden'}">${ic('check','s')}已經為這封信建立過回信</p><input type="hidden" name="reply" value="">`
+          : `<label class="chk reply-opt ${m.direction==='收到'?'':'hidden'}"><input type="checkbox" name="reply"> 要回信（儲存後自動加一筆「待寄出」）</label>`}</div>
+    </div>
+    <div class="field"><label>日期</label><input class="in" type="date" name="date" value="${esc(m.date)}" required></div>
+    <div class="field"><label>是誰</label>
+      <select class="in" name="personId"><option value="">（不指定）</option><option value="__new">新增人物…</option>${opts}</select>
+      <input class="in hidden" name="newName" placeholder="名字、暱稱或帳號" style="margin-top:8px">
+    </div>
+    <div class="field"><label>管道</label>${seg('channel',CHANNELS,m.channel)}</div>
+    <div class="field pc ${m.channel==='Postcrossing'?'':'hidden'}"><label>Postcrossing 編號</label><input class="in" name="pcId" placeholder="例如：DE-1234567" value="${esc(m.pcId)}"></div>
+    ${placeFields(m)}
+    <div class="field"><label>備註</label><textarea class="in" name="note" placeholder="郵票、內容、心情…">${esc(m.note)}</textarea></div>
+    <div class="bar-actions"><button type="button" class="btn ghost" data-act="close">取消</button><button class="btn blue" type="submit">儲存</button></div>
+  </form>`);
+  const f = $('#mailForm');
+  f.addEventListener('change', async e => {
+    const t = e.target;
+    if(t.name==='region') syncPlace(f);
+    if(t.name==='direction'){ const o = f.querySelector('.reply-opt, .reply-done'); if(o) o.classList.toggle('hidden', t.value!=='收到'); if(t.value!=='收到' && f.reply.type==='checkbox') f.reply.checked = false; }
+    if(t.name==='channel') f.querySelector('.pc').classList.toggle('hidden', t.value!=='Postcrossing');
+    if(t.name==='personId'){
+      f.newName.classList.toggle('hidden', t.value!=='__new');
+      if(t.value==='__new') f.newName.focus();
+      const p = person(t.value);
+      if(p){
+        f.querySelectorAll('[name=channel]').forEach(r => r.checked = r.value===p.channel);
+        f.querySelectorAll('[name=region]').forEach(r => r.checked = r.value===p.region);
+        syncPlace(f);
+        if(p.region==='台灣') f.city.value = p.place || '臺北市'; else f.country.value = p.place || '';
+        f.querySelector('.pc').classList.toggle('hidden', p.channel!=='Postcrossing');
+      }
+    }
+  });
+  f.addEventListener('submit', submitMail);
+}
+async function submitMail(e){
+  e.preventDefault();
+  const f = e.target, btn = f.querySelector('[type=submit]');
+  const place = readPlace(f);
+  if(f.region.value==='海外' && !place){ toast('請填寫國家'); return; }
+  let personId = f.personId.value;
+  btn.disabled = true; btn.textContent = '儲存中…';
+  try{
+    if(personId==='__new'){
+      const name = f.newName.value.trim();
+      if(!name){ toast('請填寫新人物的名字'); btn.disabled=false; btn.textContent='儲存'; return; }
+      const r = await call('savePerson', {name, channel:f.channel.value, region:f.region.value, place, note:''});
+      personId = r.id; DB = r.data;
+    }
+    const m = {
+      id: f.dataset.id || '', date: f.date.value, kind: f.kind.value, direction: f.direction.value,
+      personId, channel: f.channel.value, region: f.region.value, place,
+      pcId: f.channel.value==='Postcrossing' ? f.pcId.value.trim().toUpperCase() : '',
+      note: f.note.value.trim()
+    };
+    const reply = m.direction==='收到' && f.reply.type==='checkbox' && f.reply.checked;
+    const r = await call('saveMail', m, reply);
+    DB = r.data; closeModal(); render();
+    toast(!reply ? '已收進信箱' : r.replyCreated ? '已收進信箱，也加了一筆待寄出' : '已收進信箱，這個人已經有待寄出，沒有重複新增');
+  }catch(err){
+    toast('儲存失敗：' + (err.message||err)); btn.disabled=false; btn.textContent='儲存';
+  }
+}
+
+/* ---------- 信件詳細 ---------- */
+function mailDetail(id){
+  const m = DB.mails.find(x => x.id===id); if(!m) return;
+  const p = person(m.personId);
+  openModal(`${head(m.kind==='信件'?'letter':'postcard', esc(m.kind)+'・'+esc(m.direction))}
+    <dl class="dl">
+      <dt>日期</dt><dd>${esc(m.date)}</dd>
+      <dt>是誰</dt><dd>${p ? `<span class="link" data-act="openPerson" data-id="${p.id}">${esc(p.name)}</span>` : esc(personName(m))}</dd>
+      <dt>管道</dt><dd><span class="tag t-${esc(m.channel)}">${esc(m.channel)}</span></dd>
+      <dt>來源</dt><dd>${esc(placeText(m))}</dd>
+      ${m.pcId ? `<dt>編號</dt><dd>${esc(m.pcId)}</dd>` : ''}
+      ${m.note ? `<dt>備註</dt><dd>${esc(m.note).replace(/\n/g,'<br>')}</dd>` : ''}
+    </dl>
+    <div class="bar-actions"><button class="btn danger" data-act="delMail" data-id="${m.id}">${ic('trash','s')}刪除</button>
+      <span style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        ${m.direction==='待寄出' ? `<button class="btn" style="--c:#fbe7a8" data-act="markSent" data-id="${m.id}">${ic('check','s')}已寄出</button>` : ''}
+        ${m.direction==='收到' ? `<button class="btn ghost" data-act="replyLater" data-id="${m.id}">${ic('clock','s')}待回信</button>` : ''}
+        <button class="btn blue" data-act="editMail" data-id="${m.id}">${ic('edit','s')}編輯</button>
+      </span></div>`);
+}
+
+/* ---------- 人物表單與詳細 ---------- */
+function personForm(p = {}){
+  const isNew = !p.id;
+  p = {name:'', channel:'筆友', region:'台灣', place:'臺北市', address:'', note:'', ...p};
+  openModal(`${head(isNew?'plus':'edit', isNew?'新增人物':'編輯人物')}
+  <form id="personForm" data-id="${esc(p.id||'')}">
+    <div class="field"><label>名字</label><input class="in" name="name" required placeholder="名字、暱稱或帳號" value="${esc(p.name)}"></div>
+    <div class="field"><label>管道</label>${seg('channel',CHANNELS,p.channel)}</div>
+    ${placeFields(p)}
+    <div class="field"><label>地址（選填）</label><textarea class="in addr" name="address" placeholder="寄信用的地址，可多行">${esc(p.address)}</textarea></div>
+    <div class="field"><label>備註</label><textarea class="in" name="note" placeholder="興趣、Postcrossing 帳號…">${esc(p.note)}</textarea></div>
+    <div class="bar-actions"><button type="button" class="btn ghost" data-act="close">取消</button><button class="btn blue" type="submit">儲存</button></div>
+  </form>`);
+  const f = $('#personForm');
+  f.addEventListener('change', e => { if(e.target.name==='region') syncPlace(f); });
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    const place = readPlace(f);
+    if(f.region.value==='海外' && !place){ toast('請填寫國家'); return; }
+    const btn = f.querySelector('[type=submit]'); btn.disabled=true; btn.textContent='儲存中…';
+    try{
+      const r = await call('savePerson', {id:f.dataset.id||'', name:f.name.value.trim(), channel:f.channel.value, region:f.region.value, place, address:f.address.value.trim(), note:f.note.value.trim()});
+      DB = r.data; closeModal(); render(); toast('已儲存');
+    }catch(err){ toast('儲存失敗：'+(err.message||err)); btn.disabled=false; btn.textContent='儲存'; }
+  });
+}
+function personDetail(id){
+  const p = person(id); if(!p) return;
+  const s = stat(id);
+  const ms = DB.mails.filter(m => m.personId===id).sort(byDateDesc);
+  openModal(`${head('people', esc(p.name))}
+    <dl class="dl">
+      <dt>管道</dt><dd><span class="tag t-${esc(p.channel)}">${esc(p.channel)}</span></dd>
+      <dt>來源</dt><dd>${esc(placeText(p))}</dd>
+      ${p.address ? `<dt>地址</dt><dd><div class="addr-box">${esc(p.address).replace(/\n/g,'<br>')}</div><button class="copy-btn" data-act="copyAddr" data-id="${p.id}">${ic('copy','s')}複製地址</button></dd>` : ''}
+      ${p.note ? `<dt>備註</dt><dd>${esc(p.note).replace(/\n/g,'<br>')}</dd>` : ''}
+    </dl>
+    ${s.needReply ? `<div class="reply-note">${ic('inbox','s')}最後一封是 ${esc(s.lastDate)} 收到的，還沒回信${s.pending ? `（已有 ${s.pending} 封待寄出）` : ''}</div>` : ''}
+    <div class="pstats"><div><b>${s.recv}</b><span>收到</span></div><div><b>${s.sent}</b><span>寄出</span></div><div><b>${s.pending}</b><span>待寄出</span></div><div><b>${s.total}</b><span>交換次數</span></div></div>
+    ${ms.length ? ms.map(m => `<div class="row" data-act="openMail" data-id="${m.id}">
+      ${ic(m.direction==='寄出'?'send':m.direction==='待寄出'?'clock':'inbox')}
+      <div class="grow"><div>${esc(m.kind)}・${esc(m.direction)}</div><div class="sub">${esc(m.note||placeText(m))}</div></div>
+      <span class="num">${esc(m.date)}</span></div>`).join('') : '<p class="empty-s">還沒有和這位的信件紀錄</p>'}
+    <div class="bar-actions">
+      <button class="btn danger" data-act="delPerson" data-id="${p.id}">${ic('trash','s')}刪除</button>
+      <span style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn ghost" data-act="editPerson" data-id="${p.id}">${ic('edit','s')}編輯</button><button class="btn" style="--c:#fbe7a8" data-act="pendingFor" data-id="${p.id}">${ic('clock','s')}待寄出</button><button class="btn blue" data-act="mailFor" data-id="${p.id}">${ic('plus','s')}記一筆</button></span>
+    </div>`);
+}
+
+async function markSent(ids, btn){
+  ids = [].concat(ids).filter(Boolean);
+  if(!ids.length) return;
+  if(btn){ btn.disabled = true; btn.dataset.label = btn.innerHTML; btn.textContent = '處理中…'; }
+  try{
+    const r = await call('markSent', ids);
+    DB = r.data; closeModal(); render();
+    toast(r.count > 1 ? `已把 ${r.count} 封標記為寄出` : '已標記為寄出');
+  }catch(err){
+    if(btn){ btn.disabled = false; btn.innerHTML = btn.dataset.label; }
+    if(err.message !== 'NEED_LOGIN') toast('更新失敗：' + (err.message||err));
+  }
+}
+function syncBatch(){
+  const all = [...document.querySelectorAll('.pchk')];
+  const on = all.filter(c => c.checked);
+  const b = $('#batchSent'); if(!b) return;
+  b.disabled = !on.length;
+  b.innerHTML = ic('check','s') + (on.length ? `勾選的已寄出（${on.length}）` : '勾選的已寄出');
+  const a = $('#pchkAll'); if(a){ a.checked = on.length && on.length === all.length; a.indeterminate = on.length > 0 && on.length < all.length; }
+}
+
+
+/* ================= 使用說明（跳出視窗） ================= */
+const Help = (function(){
+  const LOGO = LOGO_DATA;
+
+const INK='#3A3940', SOFT='#86858F', LINE='#EBE5D8', CARD='#FFFDF7', BG='#D9E6FD', BLUE='#B5CFF8', DEEP='#5B7FC4',
+      GREEN='#DCFBA6', PEACH='#FDD8B4', YELLOW='#FBE7A8', LILAC='#E8D9F7', RING='#F0906A', CHIP='#F3EFE6', GREY='#E7E3EE';
+const f = n => Math.round(n*100)/100;
+
+/* ---------- 共用零件 ---------- */
+function t(x,y,s,size,o){ o=o||{}; return `<text x="${x}" y="${y}" font-size="${size||12}" text-anchor="${o.a||'middle'}" fill="${o.c||INK}">${s}</text>`; }
+function box(x,y,w,h,r,fill,stroke){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill||CARD}"${stroke?` stroke="${stroke}" stroke-width="1.6"`:''}/>`; }
+function pill(x,y,w,h,fill,label,size,color){ return box(x,y,w,h,h/2,fill)+t(x+w/2,y+h/2+(size||11)*0.36,label,size||11,{c:color||INK}); }
+function ring(cx,cy,r){ return `<circle class="ring" cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${RING}" stroke-width="3.2"/>`; }
+function ringRect(x,y,w,h,r){ return `<rect class="ring" x="${x}" y="${y}" width="${w}" height="${h}" rx="${r||12}" fill="none" stroke="${RING}" stroke-width="3.2"/>`; }
+function koala(x,y,w){ return `<image href="${LOGO}" x="${x}" y="${y}" width="${w}" height="${f(w*0.84)}"/>`; }
+function appIcon(x,y,size,rx){ return `<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${rx}" fill="#D8E7FF"/><image href="${LOGO}" x="${f(x+size*.1)}" y="${f(y+size*.2)}" width="${f(size*.8)}" height="${f(size*.8*.84)}"/>`; }
+function icon(name,x,y,s,c){ // 線條小圖示，24 單位
+  const P={
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    check:'<path d="m5 12.5 4.5 4.5L19 7"/>',
+    letter:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3.5 7.5 12 14l8.5-6.5"/>',
+    copy:'<rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/>',
+    clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    search:'<circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/>',
+    pin:'<path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.2"/>',
+    globe:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c3 3 3 14 0 17M12 3.5c-3 3-3 14 0 17"/>',
+    home:'<path d="M4 11.5 12 4.5l8 7"/><path d="M6.5 10v9.5h11V10"/>',
+    people:'<circle cx="9" cy="8.5" r="3.2"/><path d="M3 19.5c0-3.6 2.7-5.6 6-5.6s6 2 6 5.6"/><circle cx="17" cy="9.5" r="2.4"/><path d="M16.5 14c2.7.1 4.5 1.8 4.5 4.6"/>',
+    user:'<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c0-4.2 3.4-6.6 7.5-6.6s7.5 2.4 7.5 6.6"/>',
+    lock:'<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>',
+    send:'<path d="M12 15V4.5M8 8.5l4-4 4 4"/><path d="M4 15v4.5h16V15"/>',
+    inbox:'<path d="M12 4v10M8 10.5l4 4 4-4"/><path d="M4 15v4.5h16V15"/>'
+  };
+  return `<g transform="translate(${x} ${y}) scale(${s/24})" fill="none" stroke="${c||INK}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${P[name]}</g>`;
+}
+function svg(h,inner,label){ return `<svg viewBox="0 0 300 ${h}" role="img" aria-label="${label}">${inner}</svg>`; }
+// 網站的分頁列
+function tabsBar(y,on){
+  const L=[['home','總覽'],['letter','信件'],['people','人物'],['user','我的']];
+  return L.map(([ic,n],i)=>{ const x=8+i*72, a=i===on;
+    return box(x,y,66,30,12,a?CARD:'#EEF3FD')+icon(ic,x+10,y+8,14,a?INK:DEEP)+t(x+40,y+20,n,12,{c:a?INK:DEEP}); }).join('');
+}
+
+/* ---------- 網站功能 ---------- */
+const login = box(20,8,260,168,20)+koala(116,16,68)
+  + t(150,90,'歡迎來到無尾熊郵局',13)
+  + box(90,98,120,24,12,CHIP) + box(92,100,58,20,10,'#fff') + t(121,114,'登入',11,{c:SOFT}) + t(181,114,'註冊',11)
+  + box(36,132,228,18,8,'#fff',LINE) + t(46,145,'暱稱（筆名）',9.5,{a:'start',c:SOFT})
+  + box(36,154,228,18,8,'#fff',LINE) + t(46,167,'帳號',9.5,{a:'start',c:SOFT})
+  + ringRect(148,96,64,28,14);
+
+const overview = tabsBar(8,0)
+  + box(8,48,284,82,18) + koala(18,58,74)
+  + t(104,74,'無尾熊，你好',10.5,{a:'start',c:DEEP})
+  + t(104,98,'已經收到',14,{a:'start'}) + `<text x="166" y="102" font-size="28" fill="${DEEP}">7</text>` + t(186,98,'封',14,{a:'start'})
+  + t(104,118,'信件 3　明信片 4　寄出 1',10,{a:'start',c:SOFT})
+  + box(8,138,284,40,14) + icon('clock',20,150,16) + t(42,163,'待寄出 1 封',12,{a:'start'})
+  + pill(214,146,66,24,YELLOW,'已寄出',11,'#6D4C0C')
+  + [[BLUE,'letter','3','信件'],[PEACH,'letter','4','明信片'],[GREEN,'people','4','通信的人'],[LILAC,'send','1','寄出']].map(([c,ic,n,l],i)=>{
+      const x=8+i*72; return box(x,186,66,58,12)+`<circle cx="${x+33}" cy="${202}" r="11" fill="${c}"/>`+icon(ic,x+26,195,14)+t(x+33,228,n,13)+t(x+33,240,l,8.5,{c:SOFT}); }).join('');
+
+const newMail = box(8,8,284,180,18)
+  + t(22,32,'新增信件',13,{a:'start'})
+  + t(22,52,'類型',9.5,{a:'start',c:SOFT}) + pill(22,58,52,22,CHIP,'信件') + pill(80,58,60,22,BLUE,'明信片')
+  + t(160,52,'管道',9.5,{a:'start',c:SOFT}) + pill(160,58,46,22,BLUE,'筆友') + pill(212,58,72,22,CHIP,'Postcrossing',9.5)
+  + t(22,98,'方向',9.5,{a:'start',c:SOFT}) + pill(22,104,48,22,BLUE,'收到') + pill(76,104,48,22,CHIP,'寄出') + pill(130,104,60,22,CHIP,'待寄出')
+  + `<rect x="24" y="142" width="16" height="16" rx="4.5" fill="${DEEP}"/><path d="M28 150.5l3 3 5.5-6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+  + t(46,155,'要回信（儲存後自動加一筆「待寄出」）',10.5,{a:'start'})
+  + ringRect(16,134,262,32,12)
+  + `<rect x="168" y="196" width="120" height="38" rx="19" fill="${GREEN}"/>` + icon('plus',184,205,18) + t(240,220,'新增信件',13);
+
+const list = box(8,8,284,62,16)
+  + box(20,18,260,22,10,CHIP) + icon('search',28,22,14,SOFT) + t(48,33,'搜尋名字、地點、編號、備註',10,{a:'start',c:SOFT})
+  + t(20,60,'地區',9.5,{a:'start',c:SOFT}) + pill(46,48,40,18,BLUE,'全部',10) + pill(92,48,40,18,CHIP,'台灣',10) + pill(138,48,40,18,CHIP,'海外',10)
+  + [[PEACH,'明信片','收到','Postcrossing','Mika_fi','芬蘭','FI-2345678','2026-10-12','#D6E3FB'],[BLUE,'信件','收到','筆友','小米','台灣 · 臺中市','','2026-10-28',GREEN]].map((m,i)=>{
+      const y=80+i*76;
+      return box(8,y,284,68,16)+box(18,y+9,50,50,12,m[0])+icon('letter',31,y+22,24,'#fff')
+        +pill(78,y+8,40,16,m[0],m[1],9)+pill(122,y+8,32,16,'#E9F6DC',m[2],9)+pill(158,y+8,m[3].length>3?64:32,16,m[8],m[3],9)
+        +t(78,y+40,m[4],13,{a:'start'})+icon(i?'pin':'globe',78,y+46,11,SOFT)+t(92,y+56,m[5]+(m[6]?'　'+m[6]:''),9.5,{a:'start',c:SOFT})
+        +t(282,y+56,m[7],9,{a:'end',c:DEEP}); }).join('');
+
+const CHK = (x,y,on) => on
+  ? `<rect x="${x}" y="${y}" width="16" height="16" rx="4.5" fill="${DEEP}"/><path d="M${x+4} ${y+8.5}l3 3 5.5-6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+  : `<rect x="${x+1}" y="${y+1}" width="14" height="14" rx="4" fill="#fff" stroke="#CFC8B8" stroke-width="1.8"/>`;
+const pending = box(8,8,284,170,18)
+  + icon('clock',22,22,18) + t(46,37,'待寄出',14,{a:'start'}) + `<text x="96" y="37" font-size="14" fill="#B07A12">2</text>` + t(108,37,'封',14,{a:'start'})
+  + CHK(20,52,true) + t(42,64,'全選',11,{a:'start',c:SOFT})
+  + box(160,48,122,24,12,YELLOW) + icon('check',170,53,13,'#6D4C0C') + t(229,65,'勾選的已寄出（2）',10,{c:'#6D4C0C'})
+  + ringRect(155,44,132,32,16)
+  + `<line x1="20" y1="82" x2="280" y2="82" stroke="${LINE}" stroke-width="1.5" stroke-dasharray="4 4"/>`
+  + [['信件','Yuki','回信'],['明信片','Anna','聖誕卡']].map((r,i)=>{ const y=88+i*40;
+      return (i?`<line x1="20" y1="${y-4}" x2="280" y2="${y-4}" stroke="${LINE}" stroke-width="1.5" stroke-dasharray="4 4"/>`:'')
+        +CHK(20,y+7,true)
+        +pill(44,y+6,r[0].length>2?44:36,18,r[0]==='信件'?BLUE:PEACH,r[0],9.5)+t(96,y+15,r[1],12,{a:'start'})+t(96,y+29,r[2],9.5,{a:'start',c:SOFT})
+        +box(208,y+4,74,24,12,YELLOW)+icon('check',218,y+9,13,'#6D4C0C')+t(254,y+21,'已寄出',11,{c:'#6D4C0C'}); }).join('');
+
+const nameW = n => [...n].reduce((w,c) => w + (/[\u3000-\u9fff]/.test(c) ? 13 : 7), 0);
+const people = [['小', '#DCFBA6','小米','台灣 · 臺中市','筆友',GREEN,'收 2・寄 0',2,true],['A','#B5CFF8','Anna','德國','筆友',GREEN,'收 1・寄 1',2,false],['M','#FDD8B4','Mika_fi','芬蘭','Postcrossing','#D6E3FB','收 1・寄 0',1,true]].map((p,i)=>{
+    const y=8+i*66, bx=66+nameW(p[2])+8;
+    return box(8,y,284,58,16)+`<circle cx="38" cy="${y+29}" r="19" fill="${p[1]}"/>`+t(38,y+35,p[0],15)
+      +t(66,y+22,p[2],13,{a:'start'})
+      +(p[8] ? box(bx,y+10,56,16,8,'#FDE3D6')+icon('clock',bx+5,y+12,11,'#A2482F')+t(bx+34,y+22,'待回覆',9,{c:'#A2482F'}) : '')
+      +icon(i?'globe':'pin',66,y+27,11,SOFT)+t(80,y+37,p[3],9.5,{a:'start',c:SOFT})
+      +pill(66,y+41,p[4].length>3?66:32,14,p[5],p[4],8.5)+t(p[4].length>3?138:104,y+52,p[6],9,{a:'start',c:SOFT})
+      +`<text x="262" y="${y+30}" font-size="22" text-anchor="middle" fill="${DEEP}">${p[7]}</text>`+t(262,y+46,'交換次數',8,{c:SOFT}); }).join('')
+  + ringRect(66+nameW('小米')+5,15,62,22,11);
+
+const me = tabsBar(8,3)
+  + box(8,46,284,176,18)
+  + t(22,68,'中文地址',9.5,{a:'start',c:SOFT}) + box(22,74,256,36,10,'#fff',LINE) + t(32,90,'樹葉鎮樹頂動物園',10.5,{a:'start'}) + t(32,104,'尤加利巷 5 號　無尾熊郵局',10.5,{a:'start'})
+  + box(22,114,100,20,10,'#E9F0FD') + icon('copy',30,118,12,DEEP) + t(80,128,'複製中文地址',9.5,{c:DEEP})
+  + t(22,152,'英文地址',9.5,{a:'start',c:SOFT}) + box(22,158,256,30,10,'#fff',LINE) + t(32,177,'Koala Post, No. 5, Eucalyptus Lane',10,{a:'start'})
+  + box(22,192,100,20,10,'#E9F0FD') + icon('copy',30,196,12,DEEP) + t(80,206,'複製英文地址',9.5,{c:DEEP})
+  + ringRect(18,110,108,28,14) + ringRect(18,188,108,28,14);
+
+const forgot = box(8,8,284,108,18)
+  + icon('lock',22,22,18) + t(46,37,'修改密碼',13,{a:'start'})
+  + t(22,58,'目前的密碼（輸入臨時密碼）',9.5,{a:'start',c:SOFT}) + box(22,64,256,20,9,'#fff',LINE) + t(32,78,'● ● ● ● ● ● ● ●',9,{a:'start',c:SOFT})
+  + t(22,100,'新密碼',9.5,{a:'start',c:SOFT}) + box(70,90,208,18,9,'#fff',LINE)
+  + box(70,126,160,26,13,'#3A3940') + t(150,143,'你用的是臨時密碼，請修改',10,{c:'#fff'});
+
+const FEATS = [
+  {h:'註冊和登入', tag:'第一次使用', p:'打開網站後點「註冊」，填暱稱（筆名）、帳號和密碼就開好你自己的郵局。帳號只能用英文字母和數字，不能和別人重複，註冊後也不能改。', m:svg(184,login,'登入與註冊畫面')},
+  {h:'總覽', p:'一打開就看到收到幾封信、信件和明信片各幾封。最上面的黃色區塊是還沒寄出的信，下面還有信從哪些城市和國家來、最常通信的人。', m:svg(252,overview,'總覽頁面')},
+  {h:'新增信件', tag:'新功能', p:'按右下角綠色的「新增信件」，選類型、方向、是誰寄的、管道和地區。還沒建立的人，選「新增人物…」直接打名字。方向選「收到」時可以勾「要回信」，儲存後會自動加一筆給同一個人的待寄出；同一封信重複儲存也不會多加。', m:svg(242,newMail,'新增信件表單')},
+  {h:'找信', p:'「信件」分頁可以依類型、收到或寄出、管道、地區篩選，也能搜尋名字、地點、編號和備註。點一封信可以看詳細內容、編輯或刪除。', m:svg(232,list,'信件列表與篩選')},
+  {h:'待寄出', tag:'新功能', p:'還沒寄的信先記成「待寄出」，免得忘記回信。寄出後按「已寄出」，日期會自動改成今天。要一次寄好幾封時，在總覽的待寄出勾選要寄的信（或按「全選」），再按「勾選的已寄出」。', m:svg(186,pending,'待寄出清單，可以勾選多封')},
+  {h:'人物', tag:'新功能', p:'記錄你的筆友和卡友：管道、來自哪裡、地址和備註。每個人會顯示收到、寄出和交換次數。如果最後一封是對方寄來的，名字旁會出現「待回覆」；在篩選選「待回覆」，等最久的人會排在最前面。點進去可以看所有往來，也能複製他的地址。', m:svg(206,people,'人物列表與待回覆標籤')},
+  {h:'我的資料', p:'在「我的」可以改暱稱、中文地址和英文地址，也能設定新增信件時預設的類型和管道。按複製按鈕就能把自己的地址傳給筆友。這裡也能修改密碼和登出。', m:svg(230,me,'我的資料頁面')},
+  {h:'忘記密碼', p:'請聯絡無尾熊郵局管理員，告訴他你的帳號。管理員會給你一組臨時密碼，用它登入後會自動跳到「我的」頁面，請馬上改成新密碼。', m:svg(160,forgot,'用臨時密碼登入後修改密碼')}
+];
+
+/* ---------- 手機插圖 ---------- */
+let clipN = 0;
+function phone(screen){
+  const id = 'scr' + (clipN++);
+  return `<svg viewBox="0 0 200 340" role="img"><rect x="8" y="4" width="184" height="332" rx="30" fill="#fff" stroke="${INK}" stroke-width="3"/>`
+   +`<clipPath id="${id}"><rect x="18" y="14" width="164" height="312" rx="22"/></clipPath>`
+   +`<g clip-path="url(#${id})"><rect x="18" y="14" width="164" height="312" fill="${BG}"/>${screen}</g>`
+   +`<rect x="78" y="20" width="44" height="10" rx="5" fill="${INK}"/></svg>`;
+}
+function page(top){
+  return koala(70,top,60) + t(100,top+66,'無尾熊郵局',13)
+   + `<rect x="30" y="${top+76}" width="140" height="44" rx="12" fill="${CARD}"/>` + koala(38,top+82,34)
+   + `<rect x="80" y="${top+88}" width="50" height="8" rx="4" fill="${BLUE}"/><rect x="80" y="${top+102}" width="70" height="6" rx="3" fill="${GREY}"/>`
+   + [0,1].map(i=>`<rect x="${30+i*72}" y="${top+128}" width="68" height="40" rx="12" fill="${CARD}"/><circle cx="${64+i*72}" cy="${top+142}" r="7" fill="${i?PEACH:BLUE}"/>`).join('');
+}
+const SHARE=(x,y,c)=>`<g fill="none" stroke="${c||'#3B82F6'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M${x-6} ${y-3} h-2 v13 h16 v-13 h-2"/><path d="M${x} ${y+4} v-13 M${x-4} ${y-5} l4 -4 l4 4"/></g>`;
+const PLUSBOX=(x,y)=>`<rect x="${x-7}" y="${y-7}" width="14" height="14" rx="3.5" fill="none" stroke="${INK}" stroke-width="1.8"/><path d="M${x} ${y-3.5} v7 M${x-3.5} ${y} h7" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`;
+const DOTS=(x,y)=>[0,1,2].map(i=>`<circle cx="${x}" cy="${y-6+i*6}" r="2.1" fill="${INK}"/>`).join('');
+
+const iosBar=(hl)=>`<rect x="18" y="276" width="164" height="50" fill="#fff"/>`
+  +`<rect x="30" y="250" width="140" height="20" rx="10" fill="#fff" stroke="${LINE}" stroke-width="1.5"/>`+t(100,264,'github.io',10,{c:SOFT})
+  +`<path d="M38 293 l-6 6 l6 6" stroke="#3B82F6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+  +`<path d="M64 293 l6 6 l-6 6" stroke="#B9B7C0" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+  +SHARE(100,299)
+  +`<rect x="126" y="292" width="13" height="14" rx="2" fill="none" stroke="#3B82F6" stroke-width="2"/><path d="M128 292 v14" stroke="#3B82F6" stroke-width="2"/>`
+  +`<rect x="158" y="291" width="12" height="12" rx="2.5" fill="none" stroke="#3B82F6" stroke-width="2"/><rect x="154" y="295" width="12" height="12" rx="2.5" fill="#fff" stroke="#3B82F6" stroke-width="2"/>`
+  +(hl?ring(100,298,15):'');
+
+const IOS=[
+  {title:'用 Safari 打開網址', text:'在 iPhone 上用 <span class="key">Safari</span> 打開無尾熊郵局，等登入畫面出現。',
+   sub:'從 LINE 點開的連結，要先按右下角「⋯」選「在 Safari 中開啟」。', pic:phone(page(56)+iosBar(false))},
+  {title:'點下方的分享按鈕', text:'點畫面最下方中間，<span class="key">方框加向上箭頭</span> 的分享按鈕。',
+   sub:'如果下方沒有這個按鈕，先點網址列旁邊的「⋯」，再點「分享」。', pic:phone(page(56)+iosBar(true))},
+  {title:'選「加入主畫面」', text:'選單往上滑，找到 <span class="key">加入主畫面</span>，點下去。', sub:'第一排看不到的話，把選單再往上滑一點。',
+   pic:phone(page(56)+`<rect x="18" y="14" width="164" height="312" fill="${INK}" opacity=".35"/>`
+     +`<rect x="18" y="128" width="164" height="210" rx="18" fill="#fff"/><rect x="88" y="136" width="24" height="4" rx="2" fill="${GREY}"/>`
+     +[['拷貝',158],['加入書籤',196],['加入主畫面',234],['加入閱讀列表',272]].map(([s,y],i)=>
+        `<rect x="28" y="${y-14}" width="144" height="30" rx="10" fill="${i===2?'#E9F0FD':'#F6F4F8'}"/>`+t(40,y+5,s,12,{a:'start'})
+        +(i===2?PLUSBOX(158,y+1):`<circle cx="158" cy="${y+1}" r="6" fill="none" stroke="#B9B7C0" stroke-width="1.6"/>`)).join('')
+     +ringRect(26,218,148,34))},
+  {title:'確認名稱，按「加入」', text:'名稱會自動寫好「無尾熊郵局」，「打開為網頁 App」保持開啟，點右上角的 <span class="key">加入</span>。', sub:'想改名稱也可以在這裡改。',
+   pic:phone(`<rect x="18" y="14" width="164" height="312" fill="#F4F2F7"/>`
+     +t(34,62,'取消',12,{a:'start',c:'#3B82F6'})+t(100,62,'加入主畫面',12)+t(166,62,'加入',12,{a:'end',c:'#3B82F6'})+ring(155,58,16)
+     +`<rect x="28" y="84" width="144" height="70" rx="14" fill="#fff"/>`+appIcon(38,94,50,12)
+     +t(98,114,'無尾熊郵局',12,{a:'start'})+`<rect x="98" y="122" width="62" height="1.5" fill="${LINE}"/>`+t(98,140,'github.io',9,{a:'start',c:SOFT})
+     +`<rect x="28" y="166" width="144" height="34" rx="12" fill="#fff"/>`+t(38,187,'打開為網頁 App',10.5,{a:'start'})
+     +`<rect x="140" y="176" width="24" height="14" rx="7" fill="#34C759"/><circle cx="157" cy="183" r="5.5" fill="#fff"/>`)}
+];
+
+const andBar=(hl)=>`<rect x="18" y="14" width="164" height="54" fill="#fff"/>`
+  +`<rect x="28" y="36" width="122" height="22" rx="11" fill="#F4F2F7"/>`+t(89,51,'github.io',10,{c:SOFT})
+  +DOTS(166,47)+(hl?ring(166,47,13):'');
+const AND=[
+  {title:'用 Chrome 打開網址', text:'在 Android 手機上用 <span class="key">Chrome</span> 打開無尾熊郵局，等登入畫面出現。',
+   sub:'從 LINE 點開的連結，要先按右上角「⋮」選「用預設瀏覽器開啟」。', pic:phone(andBar(false)+page(84))},
+  {title:'點右上角「⋮」', text:'點網址列右邊，<span class="key">直排三個點</span> 的選單按鈕。', sub:'', pic:phone(andBar(true)+page(84))},
+  {title:'選「加到主畫面」', text:'在選單裡找到 <span class="key">加到主畫面</span> 或 <span class="key">安裝應用程式</span>，點下去。', sub:'不同手機的字可能有一點不一樣，兩個都可以。',
+   pic:phone(andBar(false)+page(84)+`<rect x="72" y="40" width="106" height="182" rx="12" fill="#fff" stroke="${LINE}" stroke-width="1.5"/>`
+     +[['新分頁',68],['書籤',102],['加到主畫面',136],['分享',170],['設定',204]].map(([s,y],i)=>
+        (i===2?`<rect x="78" y="${y-15}" width="94" height="28" rx="9" fill="#E9F0FD"/>`:'')+t(88,y+4,s,12,{a:'start'})).join('')
+     +ringRect(74,117,102,34))},
+  {title:'按「新增」', text:'跳出確認視窗後，點 <span class="key">新增</span>。有些手機會寫成 <span class="key">安裝</span>。', sub:'有些手機會再問一次要不要放到桌面，選「新增」即可。',
+   pic:phone(andBar(false)+page(84)+`<rect x="18" y="14" width="164" height="312" fill="${INK}" opacity=".35"/>`
+     +`<rect x="30" y="100" width="140" height="130" rx="16" fill="#fff"/>`
+     +t(100,126,'加到主畫面',13)+appIcon(42,140,40,10)+t(92,165,'無尾熊郵局',12,{a:'start'})
+     +t(84,212,'取消',12,{c:SOFT})+`<rect x="114" y="196" width="46" height="24" rx="12" fill="${GREEN}"/>`+t(137,212,'新增',12)
+     +ringRect(110,192,54,32))}
+];
+
+function homeScreen(){
+  const cols=[38,78,118,158], rows=[66,126,186];
+  let g=`<rect x="18" y="14" width="164" height="312" fill="#CFDDF8"/><path d="M18 250 q20 -10 41 0 t41 0 t41 0 t41 0 V330 H18Z" fill="#BFD2F5"/>`;
+  const fills=['#FFE3D1','#E3F3D8','#FFF0C2','#E8DCF6','#D9E8FB','#F8E1EC','#E4F3D8','#FFE8E0','#DDEFFA','#F3E8D8'];
+  let k=0;
+  rows.forEach((y,ri)=>cols.forEach((x,ci)=>{
+    if(ri===1&&ci===1){ g+=appIcon(x-14,y-14,28,7)+t(x,y+29,'無尾熊郵局',7.5)+ringRect(x-19,y-19,38,38); }
+    else { g+=`<rect x="${x-14}" y="${y-14}" width="28" height="28" rx="7" fill="${fills[k++%fills.length]}"/>`+`<rect x="${x-10}" y="${y+19}" width="20" height="4" rx="2" fill="#fff" opacity=".8"/>`; }
+  }));
+  g+=`<rect x="34" y="282" width="132" height="34" rx="14" fill="#fff" opacity=".55"/>`;
+  return phone(g);
+}
+const DONE={title:'完成', text:'桌面上會出現 <span class="key">無尾熊郵局</span> 的無尾熊圖示，之後點一下就能打開你的郵局。', sub:'', pic:homeScreen(), done:true};
+
+const BULB=`<svg viewBox="0 0 26 26"><path d="M13 3 a7 7 0 0 1 4 12.7 V18 h-8 v-2.3 A7 7 0 0 1 13 3Z" fill="#FFE07A" stroke="#E0A52A" stroke-width="1.8"/><rect x="9.5" y="19.5" width="7" height="3" rx="1.5" fill="#E0A52A"/></svg>`;
+const STAMP=`<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1.5" fill="#fff" stroke="${BLUE}" stroke-width="2" stroke-dasharray="2 1.6"/><rect x="7" y="6" width="10" height="12" rx="1" fill="${GREEN}"/><circle cx="10.5" cy="11" r="2" fill="${BLUE}"/><circle cx="14" cy="10.5" r="1.8" fill="${PEACH}"/></svg>`;
+const NOTES={
+  ios:`${BULB}<div>iPhone 一定要用 <b>Safari</b> 才能加到桌面，在 Chrome 或 LINE 裡面打開的都不行。</div>`,
+  android:`${BULB}<div>Android 建議用 <b>Chrome</b>。在 LINE 或 Facebook 裡面直接打開的頁面，選單裡沒有加到桌面的選項。</div>`
+};
+const TIPS=[
+  '如果點開後一片空白，等幾秒或往下拉重新整理一次。'
+];
+
+
+  function stepHTML(st,i){
+    return `<li class="step ${st.done?'done':''}">
+      <div class="hd"><span class="num">${st.done?'<svg viewBox="0 0 20 20" width="18" height="18"><path d="M4 10.5 l4 4 l8 -9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>':i+1}</span><h3>${st.title}</h3></div>
+      <p>${st.text}</p>${st.sub?`<p class="sub">${st.sub}</p>`:''}
+      <div class="pic">${st.pic}</div>
+    </li>`;
+  }
+  function stepsHTML(kind){
+    const list = (kind==='android'?AND:IOS).concat([DONE]);
+    return list.map(stepHTML).join('');
+  }
+  let kind = /android/i.test(navigator.userAgent) ? 'android' : 'ios';
+  try{ kind = localStorage.getItem('kp-kind') || kind; }catch(e){}
+  let tab = 'feats';
+
+  function html(){
+    return `${head('help','使用說明')}
+    <div class="help">
+      <div class="help-tabs">
+        <button class="${tab==='feats'?'on':''}" data-act="helpTab" data-v="feats">網站功能</button>
+        <button class="${tab==='install'?'on':''}" data-act="helpTab" data-v="install">加到手機桌面</button>
+      </div>
+      ${tab==='feats'
+        ? `<ul class="feats">${FEATS.map(x=>`<li class="feat"><div class="mock">${x.m}</div><h4>${x.h}${x.tag?`<i class="${x.tag==='新功能'?'new':''}">${x.tag}</i>`:''}</h4><p>${x.p}</p></li>`).join('')}</ul>`
+        : `<p class="lead">加好之後，在桌面點一下無尾熊，就能打開你的郵局。</p>
+           <div class="pick">
+             <button class="${kind==='ios'?'on':''}" data-act="helpOs" data-v="ios">iPhone<small>用 Safari</small></button>
+             <button class="${kind==='android'?'on':''}" data-act="helpOs" data-v="android">Android<small>用 Chrome</small></button>
+           </div>
+           <div class="note">${NOTES[kind]}</div>
+           <ol class="steps">${stepsHTML(kind)}</ol>
+           <div class="tips"><b style="font-weight:400">小提醒</b>${TIPS.map(s=>`<p>${STAMP}<span>${s}</span></p>`).join('')}</div>`}
+    </div>`;
+  }
+  function open(){ openModal(html()); }
+  function setTab(v){ tab = v; open(); const sh = $('.sheet'); if(sh) sh.scrollTop = 0; }
+  function setOs(v){ kind = v; try{ localStorage.setItem('kp-kind', v); }catch(e){} open(); }
+  return {open, setTab, setOs};
+})();
+
+/* ================= 事件 ================= */
+document.addEventListener('click', async e => {
+  if(e.target.id==='modal'){ closeModal(); return; }
+  if(e.target.closest('.pick-box')) return;   // 勾選框：只勾選，不打開信件
+  const el = e.target.closest('[data-act]'); if(!el) return;
+  const {act, id} = el.dataset;
+  if(act==='tab'){ view = el.dataset.v; render(); window.scrollTo(0,0); }
+  if(act==='close') closeModal();
+  if(act==='chip'){
+    const st = el.dataset.s==='m' ? filt : pf;
+    st[el.dataset.k] = el.dataset.v;
+    el.parentNode.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c===el));
+    st===filt ? renderMailList() : renderPeopleList();
+  }
+  if(act==='copyAddr'){ const p = person(id); if(p) copyText(p.address); }
+  if(act==='markSent'){ e.stopPropagation(); markSent([id], el); return; }
+  if(act==='batchSent'){ markSent([...document.querySelectorAll('.pchk:checked')].map(c => c.value), el); return; }
+  if(act==='replyLater'){
+    const m = DB.mails.find(x => x.id===id);
+    if(m) mailForm({kind:m.kind, direction:'待寄出', personId:m.personId, channel:m.channel, region:m.region, place:m.place, note:'回信'});
+  }
+  if(act==='pendingFor'){ const p = person(id); mailForm({direction:'待寄出', personId:p.id, channel:p.channel, region:p.region, place:p.place}); }
+  if(act==='authMode'){ showAuth(el.dataset.m); return; }
+  if(act==='logout'){ logout(); return; }
+  if(act==='copyMyAddr'){ if(PROFILE && PROFILE.address) copyText(PROFILE.address); return; }
+  if(act==='copyMyAddrEn'){ if(PROFILE && PROFILE.addressEn) copyText(PROFILE.addressEn); return; }
+  if(act==='help'){ Help.open(); return; }
+  if(act==='maintReload'){ location.reload(); return; }
+  if(act==='maintAdmin'){ showAuth('login'); return; }
+  if(act==='maintBack'){ showMaintenance(); return; }
+  if(act==='helpTab'){ Help.setTab(el.dataset.v); return; }
+  if(act==='helpOs'){ Help.setOs(el.dataset.v); return; }
+  if(act==='newMail') mailForm();
+  if(act==='newPerson') personForm();
+  if(act==='openMail') mailDetail(id);
+  if(act==='openPerson') personDetail(id);
+  if(act==='editMail') mailForm(DB.mails.find(m => m.id===id));
+  if(act==='editPerson') personForm(person(id));
+  if(act==='mailFor'){ const p = person(id); mailForm({personId:p.id, channel:p.channel, region:p.region, place:p.place}); }
+  if(act==='delMail'){
+    if(!await askConfirm('確定要刪除這筆信件紀錄嗎？', {title:'刪除信件', ok:'刪除', danger:true})) return;
+    try{ const r = await call('deleteMail', id); DB = r.data; closeModal(); render(); toast('已刪除'); }catch(err){ toast('刪除失敗'); }
+  }
+  if(act==='delPerson'){
+    const n = stat(id).total;
+    if(!await askConfirm(n ? `這位有 ${n} 筆信件紀錄。\n刪除人物後信件會保留，但不再連結。` : '確定要刪除這位嗎？', {title:'刪除人物', ok:'刪除', danger:true})) return;
+    try{ const r = await call('deletePerson', id); DB = r.data; closeModal(); render(); toast('已刪除'); }catch(err){ toast('刪除失敗'); }
+  }
+});
+document.addEventListener('change', e => {
+  if(e.target.id === 'pchkAll'){ document.querySelectorAll('.pchk').forEach(c => c.checked = e.target.checked); syncBatch(); }
+  else if(e.target.classList && e.target.classList.contains('pchk')) syncBatch();
+});
+document.addEventListener('input', e => {
+  if(e.target.id==='mq'){ filt.q = e.target.value; renderMailList(); }
+  if(e.target.id==='pq'){ pf.q = e.target.value; renderPeopleList(); }
+});
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+/* ================= 啟動 ================= */
+window.addEventListener('error', e => { try{ toast('網頁錯誤：' + (e.message || '未知')); }catch(_){} });
+(async function init(){
+  window.__APP_STARTED = true;
+  renderTabs();
+  $('#countries').innerHTML = COUNTRIES.map(c => `<option value="${c}">`).join('');
+  $('#brandLogo').innerHTML = logoMarkup();
+  if(!IS_LIVE){
+    $('#demoNote').classList.remove('hidden');
+    if(await checkMaintenance()){ showMaintenance(); return; }
+    startApp(); return;
+  }
+  if(!sb){ showAuth('login', '網頁元件沒有載入成功，請確認網路後重新整理一次'); return; }
+  // 在別的分頁登出、或登入過期時，回到登入畫面
+  sb.auth.onAuthStateChange(ev => {
+    if(ev === 'SIGNED_OUT' && TOKEN){ saveToken(''); setTimeout(() => showAuth('login', '登入已過期，請重新登入'), 0); }
+  });
+  let hasSession = false;
+  try{ const {data} = await sb.auth.getSession(); hasSession = !!(data && data.session); }catch(e){}
+  // 切回這個分頁時再確認一次：維護開始就顯示維護畫面，維護結束就自動重新整理
+  document.addEventListener('visibilitychange', async () => {
+    if(document.visibilityState !== 'visible') return;
+    const wasBlocked = maintBlocked();
+    const blocked = await checkMaintenance();
+    if(blocked && !wasBlocked) showMaintenance();
+    else if(!blocked && wasBlocked) location.reload();
+  });
+  // 維護中：一般使用者只看到維護畫面（維護管理員照常使用）
+  if(await checkMaintenance()){ showMaintenance(); return; }
+  if(hasSession){ saveToken('ok'); startApp(); } else showAuth('login');
+})();
+</script>
 </body>
 </html>
