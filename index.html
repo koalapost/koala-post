@@ -342,7 +342,7 @@ textarea.in.addr{min-height:64px}
       </div>
       <button class="help-btn" data-act="help" aria-label="使用說明"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.6"/><path d="M12 17v.1"/></g></svg><span>說明</span></button>
     </div>
-    <p id="demoNote" class="demo-note hidden">目前是預覽模式（範例資料），在程式裡填入 Supabase 金鑰後就會讀寫資料庫</p>
+    <p id="demoNote" class="demo-note hidden">目前是預覽模式（範例資料）</p>
   </header>
 
   <nav class="tabs" id="tabs"></nav>
@@ -435,8 +435,8 @@ const today = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.ge
 const byDateDesc = (a,b) => (b.date||'').localeCompare(a.date||'') || (b.created||'').localeCompare(a.created||'');
 function ic(name, cls=''){ return `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#crayonS)">${ICONS[name]||''}</g></svg>`; }
 
-// 你畫的無尾熊（已去背），拆成多行避免單行太長
-const LOGO_DATA = 'data:image/png;base64,' + [
+const LOGO_FILE = 'logo.png';
+const LOGO_BUILTIN = 'data:image/png;base64,' + [
   'iVBORw0KGgoAAAANSUhEUgAAAWgAAAEjCAMAAAAopGtIAAADAFBMVEWxsbYAAAABAQH9/Pze/q650/79/v/h/rGR246trbG5u8L+',
   '3bnDyNHN2Ozr/s69wcsVFRbM1un547fP1/DDytfL1eeqqqqr55iGh4l3dnqVlpfo6OnJ1+fW5/tHR0lpaWzDytjEy9k1NTYmJifK',
   '1OXL1ebT1dpWVli+vr74+f1/f3/19/1/f/+ys7m9ws3N6dSqqv/K1OS4vMSc4JLEy9ru9P3x9f309/3t8/6x///m5/7Ey9udnaHV',
@@ -562,11 +562,18 @@ const LOGO_DATA = 'data:image/png;base64,' + [
   't+FCtN5tAgazyiK+NFgRQT/XVVWtW18a6gnLv+r6zg68EXVo4LK/Fn7eQ2tsSj5DLSJkUUD3pdv2TWxUG9sbyFMA6QhCZuURXKah',
   'd3+VyUAabmUNiQnXvf4f+mZ4pVRYrikAAAAASUVORK5CYII='
 ].join('');
-function koalaSVG(){
-  return '<img class="koala" src="' + LOGO_DATA + '" alt="">';
+let LOGO_URL = LOGO_FILE;
+// logo.png 讀不到時，改用內建的無尾熊
+function useBuiltinLogo(){
+  if(LOGO_URL === LOGO_BUILTIN) return;
+  LOGO_URL = LOGO_BUILTIN;
+  document.querySelectorAll('img[src="' + LOGO_FILE + '"]').forEach(i => { i.src = LOGO_BUILTIN; });
+  document.querySelectorAll('image[href="' + LOGO_FILE + '"]').forEach(i => i.setAttribute('href', LOGO_BUILTIN));
 }
-let LOGO_URL = LOGO_DATA;
-const logoMarkup = () => LOGO_URL ? `<img src="${LOGO_URL}" alt="無尾熊郵局">` : koalaSVG();
+(function(){ const t = new Image(); t.onerror = useBuiltinLogo; t.src = LOGO_FILE; })();
+const logoImg = cls => `<img${cls ? ` class="${cls}"` : ''} src="${LOGO_URL}" alt="無尾熊郵局" onerror="this.onerror=null;useBuiltinLogo();this.src=LOGO_BUILTIN">`;
+function koalaSVG(){ return logoImg('koala'); }
+const logoMarkup = () => logoImg('');
 
 function copyText(t){
   const done = () => toast('已複製地址');
@@ -608,11 +615,12 @@ function askConfirm(text, opt){
   });
 }
 
+/* ================= 後端 ================= */
 const SUPABASE_URL = 'https://vcabdxsnlqgevssidpft.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_yXlrXLQw1gvHoe9oYJFaTw_kp5JO0Ti';
 const ACCOUNT_DOMAIN = 'koala-post.app';
 
-const IS_LIVE = !!SUPABASE_KEY;
+const IS_LIVE = !!(SUPABASE_URL && SUPABASE_KEY);
 const sb = (IS_LIVE && window.supabase)
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{persistSession:true, autoRefreshToken:true, storageKey:'koalaPostAuth'}})
   : null;
@@ -703,7 +711,6 @@ async function loadAll(){
 async function loadData(){ const d = await loadAll(); return {people:d.people, mails:d.mails}; }
 
 const Live = {
-  // 維護模式：on = 維護中、message = 說明文字、bypass = 目前登入的是維護管理員
   async maintenance(){ return must(await sb.rpc('maintenance_status')) || {on:false}; },
 
   async getConfig(){ return {inviteRequired: !!must(await sb.rpc('invite_required'))}; },
@@ -754,7 +761,6 @@ const Live = {
     const u = await currentUser();
     newPw = String(newPw || '');
     checkPassword(newPw);
-    // 先用目前的密碼驗證一次，確定是本人
     const {error} = await sb.auth.signInWithPassword({email:u.email, password:String(oldPw || '')});
     if(error) fail(/Invalid login credentials/i.test(error.message) ? '目前的密碼不正確' : sbErr(error).message.replace(/^MSG:/, ''));
     must(await sb.auth.updateUser({password:newPw, data:{must_change:false}}));
@@ -857,7 +863,6 @@ const Demo = (() => {
   const ok = () => ({token:'demo', profile:{...me}});
   return {
     getConfig: () => ({inviteRequired:false}),
-    // 預覽時在網址後面加 ?maintenance 可以看維護畫面
     maintenance: () => ({on: /[?&]maintenance\b/.test(location.search), message:'', bypass:false}),
     login: (a, p) => (String(a).trim().toLowerCase() === me.account.toLowerCase() && p === pw) ? ok() : fail('帳號或密碼不正確（預覽：koala / koala123）'),
     register: f => { checkAccount(String(f.account).trim()); checkNickname(String(f.nickname||'').trim()); checkPassword(String(f.password)); me = {...me, nickname:f.nickname, account:String(f.account).trim(), address:''}; pw = f.password; return ok(); },
@@ -905,11 +910,10 @@ function call(fn, ...args){
   });
 }
 
-/* ---------- 維護畫面（資料庫 app_settings 的 maintenance 設成 on 時顯示） ---------- */
+/* ---------- 維護畫面 ---------- */
 let MAINT = {on:false};
 const DEFAULT_MAINT_MSG = '系統正在升級維護，完成後會再通知大家。\n造成不便，請多包涵。';
 const maintBlocked = () => !!(MAINT && MAINT.on && !MAINT.bypass);
-// 問資料庫現在是不是維護中；讀不到就當作沒有維護，網站照常運作
 async function checkMaintenance(){
   try{ MAINT = (await call('maintenance')) || {on:false}; }catch(e){ MAINT = {on:false}; }
   return maintBlocked();
@@ -942,7 +946,7 @@ async function showAuth(mode, msg){
   closeModal();
   $('#tabs').classList.add('hidden'); $('#fab').classList.add('hidden');
   if(!CONFIG){ try{ CONFIG = await call('getConfig'); }catch(e){ CONFIG = {inviteRequired:false}; } }
-  const adminOnly = maintBlocked();          // 維護中：只開放管理員登入，不能註冊
+  const adminOnly = maintBlocked();
   if(adminOnly) mode = 'login';
   const isReg = mode === 'register';
   $('#main').innerHTML = `<section class="paper card login">
@@ -982,7 +986,6 @@ async function showAuth(mode, msg){
       const r = isReg
         ? await call('register', {nickname:f.nickname.value.trim(), account:f.account.value.trim(), password:f.password.value, invite:f.invite ? f.invite.value.trim() : ''})
         : await call('login', f.account.value.trim(), f.password.value);
-      // 維護中：登入後再確認一次是不是維護管理員
       if(MAINT && MAINT.on && await checkMaintenance()){
         saveToken(''); PROFILE = null;
         if(sb) await sb.auth.signOut({scope:'local'}).catch(() => {});
@@ -1492,7 +1495,6 @@ function syncBatch(){
 
 /* ================= 使用說明（跳出視窗） ================= */
 const Help = (function(){
-  const LOGO = LOGO_DATA;
 
 const INK='#3A3940', SOFT='#86858F', LINE='#EBE5D8', CARD='#FFFDF7', BG='#D9E6FD', BLUE='#B5CFF8', DEEP='#5B7FC4',
       GREEN='#DCFBA6', PEACH='#FDD8B4', YELLOW='#FBE7A8', LILAC='#E8D9F7', RING='#F0906A', CHIP='#F3EFE6', GREY='#E7E3EE';
@@ -1504,8 +1506,8 @@ function box(x,y,w,h,r,fill,stroke){ return `<rect x="${x}" y="${y}" width="${w}
 function pill(x,y,w,h,fill,label,size,color){ return box(x,y,w,h,h/2,fill)+t(x+w/2,y+h/2+(size||11)*0.36,label,size||11,{c:color||INK}); }
 function ring(cx,cy,r){ return `<circle class="ring" cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${RING}" stroke-width="3.2"/>`; }
 function ringRect(x,y,w,h,r){ return `<rect class="ring" x="${x}" y="${y}" width="${w}" height="${h}" rx="${r||12}" fill="none" stroke="${RING}" stroke-width="3.2"/>`; }
-function koala(x,y,w){ return `<image href="${LOGO}" x="${x}" y="${y}" width="${w}" height="${f(w*0.84)}"/>`; }
-function appIcon(x,y,size,rx){ return `<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${rx}" fill="#D8E7FF"/><image href="${LOGO}" x="${f(x+size*.1)}" y="${f(y+size*.2)}" width="${f(size*.8)}" height="${f(size*.8*.84)}"/>`; }
+function koala(x,y,w){ return `<image onerror="this.onerror=null;useBuiltinLogo();this.setAttribute('href',LOGO_BUILTIN)" href="${LOGO_URL}" x="${x}" y="${y}" width="${w}" height="${f(w*0.84)}"/>`; }
+function appIcon(x,y,size,rx){ return `<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${rx}" fill="#D8E7FF"/><image onerror="this.onerror=null;useBuiltinLogo();this.setAttribute('href',LOGO_BUILTIN)" href="${LOGO_URL}" x="${f(x+size*.1)}" y="${f(y+size*.2)}" width="${f(size*.8)}" height="${f(size*.8*.84)}"/>`; }
 function icon(name,x,y,s,c){ // 線條小圖示，24 單位
   const P={
     plus:'<path d="M12 5v14M5 12h14"/>',
@@ -1842,7 +1844,6 @@ window.addEventListener('error', e => { try{ toast('網頁錯誤：' + (e.messag
     if(blocked && !wasBlocked) showMaintenance();
     else if(!blocked && wasBlocked) location.reload();
   });
-  // 維護中：一般使用者只看到維護畫面（維護管理員照常使用）
   if(await checkMaintenance()){ showMaintenance(); return; }
   if(hasSession){ saveToken('ok'); startApp(); } else showAuth('login');
 })();
